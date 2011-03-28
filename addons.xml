@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addons>
+<addon id="plugin.video.alaska.hd"
+       name="Alaska HDTV"
+       version="0.0.1"
+       provider-name="divingmule">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Alaska HD videos.</summary>
+    <description>Travelers and outdoor enthusiasts alike join ﬁfth generation Alaskan Scott Slone as he hikes, boats, climbs and travels throughout some of the most awe-inspiring locations in Alaska.</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.live.streams"
+       name="LiveStreams"
+       version="0.0.1"
+       provider-name="divingmule">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+	<import addon="script.module.beautifulsoup" version="3.0.8"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary></summary>
+    <description>It's up to you;) As an alternative to .strm files this add-on lets you add streams by adding items to an xml file. Thus giving you a nice list with thumbnails if you like.</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.pipes"
+       name="Pipes"
+       version="0.0.1"
+       provider-name="divingmule, Vrok">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+	<import addon="script.module.beautifulsoup" version="3.0.8"/>
+	<import addon="script.module.simplejson"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>This is a XBMC add-on that list videos from sites like Justin.TV, Ustream and others. Then uses Firefox to play the video.</summary>
+    <description>Check here: http://code.google.com/p/pipes-xbmc/ and here: http://forum.xbmc.org/showthread.php?t=94739 for more information.</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.weather.channel"
+       name="The Weather Channel"
+       version="0.0.0"
+       provider-name="divingmule">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+	<import addon="script.module.beautifulsoup" version="3.0.8"/>
+	<import addon="script.module.simplejson"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Videos from The Weather Channel.com</summary>
+    <description>[WIP] While this works fairly well the scraping needs work. ;)</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+</addons>

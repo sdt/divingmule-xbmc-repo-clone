@@ -13,8 +13,8 @@
         <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary></summary>
-    <description></description>
+    <summary>Videos from The Weather Channel.com</summary>
+    <description>[WIP] While this works fairly well the scraping needs work. ;)</description>
     <platform>all</platform>
   </extension>
 </addon>
