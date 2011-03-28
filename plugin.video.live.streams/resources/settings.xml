@@ -1,0 +1,3 @@
+<settings>
+   <setting id="xml_file" type="file"  source="files" label="Locate Your XML File" default=""/>
+</settings>
