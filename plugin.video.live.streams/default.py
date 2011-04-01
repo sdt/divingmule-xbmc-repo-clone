@@ -8,7 +8,44 @@ file = __settings__.getSetting('xml_file')
 if file == "":
 		file = xbmc.translatePath( os.path.join( home, 'example_streams.xml' ) )
 
+def getChannels():
+		response = open(file, 'rb')
+		link=response.read()
+		response.close()
+		soup = BeautifulStoneSoup(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+		if len(soup('channels')) > 0:
+				channels = soup('channel')
+				for channel in channels:
+						name = channel('name')[0].string
+						thumbnail = channel('thumbnail')[0].string
+						url = ''
+						addDir(name,url,1,thumbnail)
+		else:
+				INDEX()
 
+def getChannelItems(name):
+		response = open(file, 'rb')
+		link=response.read()
+		response.close()
+		soup = BeautifulStoneSoup(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+		channel_list = soup('name', text=name)[0].next.next.next.next.next
+		items = channel_list('item')
+		for item in items:
+				try:
+						name = item('title')[0].string
+				except:
+						pass
+				try:
+						url = item('link')[0].string
+				except:
+						pass
+				try:
+						thumbnail = item('thumbnail')[0].string
+				except:
+						pass
+				addLink(url,name,thumbnail)
+				
+				
 def INDEX():
 		# url = ''
 		# req = urllib2.Request(url)
@@ -53,6 +90,14 @@ def get_params():
 		return param
 
 
+def addDir(name,url,mode,iconimage):
+		u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
+		ok=True
+		liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+		liz.setInfo( type="Video", infoLabels={ "Title": name } )
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+		return ok
+
 def addLink(url,name,iconimage):
 		ok=True
 		liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
@@ -83,8 +128,12 @@ print "Mode: "+str(mode)
 print "URL: "+str(url)
 print "Name: "+str(name)
 
-if mode==None or url==None or len(url)<1:
+if mode==None:
 		print ""
-		INDEX()
+		getChannels()
+
+elif mode==1:
+		print ""+url
+		getChannelItems(name)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
