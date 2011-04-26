@@ -1,0 +1,4 @@
+version 0.0.3
+added community-links http://code.google.com/p/community-links/
+added the ability to enter a url
+added settings to hide/show community-links/local-file

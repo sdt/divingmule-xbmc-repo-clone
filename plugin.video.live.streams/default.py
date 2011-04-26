@@ -1,6 +1,6 @@
 import urllib,urllib2,re,os
 import xbmcplugin,xbmcgui,xbmcaddon
-from BeautifulSoup import BeautifulStoneSoup
+from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.live.streams')
 home = __settings__.getAddonInfo('path')
@@ -9,7 +9,38 @@ if file == "":
 		file = xbmc.translatePath( os.path.join( home, 'example_streams.xml' ) )
 
 def getChannels():
-		response = open(file, 'rb')
+		if __settings__.getSetting('community_list') == "true":
+				req = urllib2.Request('http://community-links.googlecode.com/svn/trunk/')
+				response = urllib2.urlopen(req)
+				link=response.read()
+				response.close()
+				soup = BeautifulSoup(link, convertEntities=BeautifulSoup.HTML_ENTITIES)
+				files = soup('ul')[0]('li')[1:]
+				for i in files:
+						url = i('a')[0]['href']
+						name = url.replace('.xml','')
+						addDir(name,'http://community-links.googlecode.com/svn/trunk/'+url,2,xbmc.translatePath( os.path.join( home, 'icon.png' ) ))
+		if __settings__.getSetting('get_xml') != "":
+				addDir(__settings__.getSetting('get_xml_name'),__settings__.getSetting('get_xml'),2,xbmc.translatePath( os.path.join( home, 'icon.png' ) ))		
+		if __settings__.getSetting('local_file') == "true":
+				response = open(file, 'rb')
+				link=response.read()
+				response.close()
+				soup = BeautifulStoneSoup(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+				if len(soup('channels')) > 0:
+						channels = soup('channel')
+						for channel in channels:
+								name = channel('name')[0].string
+								thumbnail = channel('thumbnail')[0].string
+								url = ''
+								addDir(name,url,1,thumbnail)
+				else:
+						INDEX()
+		
+				
+def getXML(url):
+		req = urllib2.Request(url)
+		response = urllib2.urlopen(req)
 		link=response.read()
 		response.close()
 		soup = BeautifulStoneSoup(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
@@ -21,7 +52,7 @@ def getChannels():
 						url = ''
 						addDir(name,url,1,thumbnail)
 		else:
-				INDEX()
+				INDEX()				
 
 def getChannelItems(name):
 		response = open(file, 'rb')
@@ -47,9 +78,6 @@ def getChannelItems(name):
 				
 				
 def INDEX():
-		# url = ''
-		# req = urllib2.Request(url)
-		# response = urllib2.urlopen(req)
 		response = open(file, 'rb')
 		link=response.read()
 		response.close()
@@ -135,5 +163,9 @@ if mode==None:
 elif mode==1:
 		print ""+url
 		getChannelItems(name)
+
+elif mode==2:
+		print ""+url
+		getXML(url)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

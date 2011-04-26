@@ -1,3 +1,7 @@
 <settings>
-   <setting id="xml_file" type="file"  source="files" label="Locate Your XML File" default=""/>
+   <setting id="local_file" type="bool" label="Show Local File" default="true"/>
+   <setting id="xml_file" type="file"  source="files" label="Locate Your XML File" default="" enable="eq(-1,true)"/>
+   <setting id="community_list" type="bool" label="Show Community List" default="true"/>
+   <setting id="get_xml" type="text" label="Enter URL" default=""/>
+   <setting id="get_xml_name" type="text" label="Name" default="Change Me"/>
 </settings>
