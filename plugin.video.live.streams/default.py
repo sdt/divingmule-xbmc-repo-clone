@@ -49,10 +49,48 @@ def getXML(url):
 				for channel in channels:
 						name = channel('name')[0].string
 						thumbnail = channel('thumbnail')[0].string
-						url = ''
-						addDir(name,url,1,thumbnail)
+						addDir(name,url,3,thumbnail)
 		else:
-				INDEX()				
+				indexXML(url)				
+
+				
+def getChannelItems_xml(url,name):
+		req = urllib2.Request(url)
+		response = urllib2.urlopen(req)
+		link=response.read()
+		response.close()
+		soup = BeautifulStoneSoup(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+		channel_list = soup('name', text=name)[0].next.next.next.next.next
+		items = channel_list('item')
+		for item in items:
+				try:
+						name = item('title')[0].string
+				except:
+						pass
+				try:
+						if __settings__.getSetting('mirror_link') == "true":
+								try:
+										url = item('link')[1].string	
+								except:
+										url = item('link')[0].string
+						if __settings__.getSetting('mirror_link_low') == "true":
+								try:
+										url = item('link')[2].string	
+								except:
+										try:
+												url = item('link')[1].string
+										except:
+												url = item('link')[0].string
+						else:
+								url = item('link')[0].string
+				except:
+						pass
+				try:
+						thumbnail = item('thumbnail')[0].string
+				except:
+						pass
+				addLink(url,name,thumbnail)
+
 
 def getChannelItems(name):
 		response = open(file, 'rb')
@@ -89,8 +127,8 @@ def getChannelItems(name):
 				except:
 						pass
 				addLink(url,name,thumbnail)
-				
-				
+
+
 def INDEX():
 		response = open(file, 'rb')
 		link=response.read()
@@ -126,6 +164,43 @@ def INDEX():
 						pass
 				addLink(url,name,thumbnail)
 				
+
+def indexXML(url):
+		req = urllib2.Request(url)
+		response = urllib2.urlopen(req)
+		link=response.read()
+		response.close()
+		soup = BeautifulStoneSoup(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+		items = soup('item')
+		for item in items:
+				try:
+						name = item('title')[0].string
+				except:
+						pass
+				try:
+						if __settings__.getSetting('mirror_link') == "true":
+								try:
+										url = item('link')[1].string	
+								except:
+										url = item('link')[0].string
+						if __settings__.getSetting('mirror_link_low') == "true":
+								try:
+										url = item('link')[2].string	
+								except:
+										try:
+												url = item('link')[1].string
+										except:
+												url = item('link')[0].string
+						else:
+								url = item('link')[0].string
+				except:
+						pass
+				try:
+						thumbnail = item('thumbnail')[0].string
+				except:
+						pass
+				addLink(url,name,thumbnail)		
+
 
 def get_params():
 		param=[]
@@ -195,5 +270,9 @@ elif mode==1:
 elif mode==2:
 		print ""+url
 		getXML(url)
+
+elif mode==3:
+		print ""+url
+		getChannelItems_xml(url,name)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
