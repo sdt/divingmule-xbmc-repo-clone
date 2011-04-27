@@ -67,7 +67,21 @@ def getChannelItems(name):
 				except:
 						pass
 				try:
-						url = item('link')[0].string
+						if __settings__.getSetting('mirror_link') == "true":
+								try:
+										url = item('link')[1].string	
+								except:
+										url = item('link')[0].string
+						if __settings__.getSetting('mirror_link_low') == "true":
+								try:
+										url = item('link')[2].string	
+								except:
+										try:
+												url = item('link')[1].string
+										except:
+												url = item('link')[0].string
+						else:
+								url = item('link')[0].string
 				except:
 						pass
 				try:
@@ -89,7 +103,21 @@ def INDEX():
 				except:
 						pass
 				try:
-						url = item('link')[0].string
+						if __settings__.getSetting('mirror_link') == "true":
+								try:
+										url = item('link')[1].string	
+								except:
+										url = item('link')[0].string
+						if __settings__.getSetting('mirror_link_low') == "true":
+								try:
+										url = item('link')[2].string	
+								except:
+										try:
+												url = item('link')[1].string
+										except:
+												url = item('link')[0].string
+						else:
+								url = item('link')[0].string
 				except:
 						pass
 				try:
