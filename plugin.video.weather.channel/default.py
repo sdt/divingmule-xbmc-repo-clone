@@ -9,6 +9,7 @@ icon = xbmc.translatePath( os.path.join( home, 'icon.png' ) )
 
 
 def Categories():
+		addDir('Play Latest Videos','http://www.weather.com/outlook/videos/todays-top-forecast-4276',3,icon)
 		addDir('News','news',1,icon)
 		addDir('Storm Video','svideo',1,icon)
 		addDir('Forecasts','forcast',1,icon)
@@ -42,12 +43,23 @@ def getSubcate(url):
 		for item in items:
 				name = item.string
 				url = item['subcatid']
-				addDir(name,'http://www.weather.com/outlook/videos/?subcatid='+url,2,icon)
+				addDir(name,url,2,icon)
 
 
-
-		
 def INDEX(url):
+		req = urllib2.Request('http://www.weather.com/outlook/videos/?subcatid='+url)
+		req.addheaders = [('Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3 ( .NET CLR 3.5.30729)')]
+		response = urllib2.urlopen(req)
+		link=response.read()
+		response.close()
+		link = link.replace('  ','')
+		match = re.compile('wxVideo.videoObj,".+?","'+url+'",".+?","(.+?)",\n "(.+?)","(.+?)","(.+?)"').findall(link)
+		for name,thumbnail,url,description in match:
+				url = url.split('/')[7].replace('jpg','flv')
+				addLink(name,'http://v.imwx.com/v/wxflash/'+url,description,thumbnail)
+
+
+def playLatest(url):
 		req = urllib2.Request(url)
 		req.addheaders = [('Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3 ( .NET CLR 3.5.30729)')]
 		response = urllib2.urlopen(req)
@@ -55,13 +67,15 @@ def INDEX(url):
 		response.close()
 		link = link.replace('  ','')
 		match = re.compile('wxVideo.videoObj,".+?",".+?",".+?","(.+?)",\n "(.+?)","(.+?)","(.+?)"').findall(link)
+		playlist = xbmc.PlayList(1)
+		playlist.clear()
 		for name,thumbnail,url,description in match:
 				url = url.split('/')[7].replace('jpg','flv')
-				print '((((((((((((('+url+')))))))))))))))'
-				addLink(name,'http://v.imwx.com/v/wxflash/'+url,description,thumbnail)
+				info = xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=thumbnail)
+				playlist.add('http://v.imwx.com/v/wxflash/'+url, info)
+		play=xbmc.Player( xbmc.PLAYER_CORE_DVDPLAYER ).play(playlist)
 
-
-		
+				
 def get_params():
 		param=[]
 		paramstring=sys.argv[2]
@@ -131,5 +145,9 @@ elif mode==1:
 elif mode==2:
 	print ""+url
 	INDEX(url)
+
+elif mode==3:
+	print ""+url
+	playLatest(url)
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
