@@ -1,3 +1,6 @@
+version 0.0.5
+fix for community-links
+
 version 0.0.4
 added settings for lower quality mirrors
 
