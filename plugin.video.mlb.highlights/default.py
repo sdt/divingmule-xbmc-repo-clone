@@ -1,4 +1,4 @@
-import urllib,urllib2,re,os,cookielib
+import urllib,urllib2,re,os,cookielib,datetime
 import xbmcplugin,xbmcgui,xbmcaddon
 import simplejson as json
 from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup
@@ -13,7 +13,9 @@ icon = xbmc.translatePath( os.path.join( home, 'icon.png' ) )
 
 def categories():
         if __settings__.getSetting('subscription')=='true':
-                addDir("Today's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/year_2011/month_05/day_10/master_scoreboard.json',6,icon)
+                addDir("Today's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[0]+'/master_scoreboard.json',6,icon)
+                addDir("Yesterday's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[1]+'/master_scoreboard.json',6,icon)
+                addDir("Tomorrow's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[2]+'/master_scoreboard.json',6,icon)
         addDir('Play Latest Videos','',3,icon)
         addDir('Videos by Team','',4,icon)
         addDir('Latest Videos','http://mlb.mlb.com/ws/search/MediaSearchService?type=json&src=vpp&start=0&src=vpp&&hitsPerPage=60&sort=desc&sort_type=custom&src=vpp&hitsPerPage=60&src=vpp',1,icon)
@@ -512,7 +514,28 @@ class mlbGame:
         print response.read()
 
 
+class dateStr:
+        today = datetime.date.today()
+        ty = 'year_'+str(today).split()[0].split('-')[0]
+        tm = '/month_'+str(today).split()[0].split('-')[1]
+        tday = '/day_'+str(today).split()[0].split('-')[2]
+        t = ty+tm+tday
 
+        one_day = datetime.timedelta(days=1)
+
+        yesterday = today - one_day
+        yy = 'year_'+str(yesterday).split()[0].split('-')[0]
+        ym = '/month_'+str(yesterday).split()[0].split('-')[1]
+        yday = '/day_'+str(yesterday).split()[0].split('-')[2]
+        y = yy+ym+yday
+        
+        tomorrow = today + one_day
+        toy = 'year_'+str(tomorrow).split()[0].split('-')[0]
+        tom = '/month_'+str(tomorrow).split()[0].split('-')[1]
+        tod = '/day_'+str(tomorrow).split()[0].split('-')[2]
+        to = toy+tom+tod
+        
+        day = (t,y,to)
 
 def get_params():
         param=[]
