@@ -13,7 +13,7 @@ icon = xbmc.translatePath( os.path.join( home, 'icon.png' ) )
 
 def categories():
         if __settings__.getSetting('subscription')=='true':
-                addDir("Today's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/year_2011/month_05/day_07/master_scoreboard.json',6,icon)
+                addDir("Today's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/year_2011/month_05/day_10/master_scoreboard.json',6,icon)
         addDir('Play Latest Videos','',3,icon)
         addDir('Videos by Team','',4,icon)
         addDir('Latest Videos','http://mlb.mlb.com/ws/search/MediaSearchService?type=json&src=vpp&start=0&src=vpp&&hitsPerPage=60&sort=desc&sort_type=custom&src=vpp&hitsPerPage=60&src=vpp',1,icon)
@@ -175,7 +175,7 @@ def setGameURL(event,content):
 
 class mlbGame:
     def __init__(self,event_id,content_id):
-        SESSIONKEY = os.path.join( profile, 'mlb', 'sessionkey')
+        SESSIONKEY = os.path.join( profile, 'sessionkey')
 
         SOAPCODES = {
             "1"    : "OK",
@@ -374,6 +374,7 @@ class mlbGame:
         try:
             print "session-key = " + str(cookies['ftmu'])
             session = urllib.unquote(cookies['ftmu'])
+            print'!!!!!!!!!------------>'+sesion
             sk = open(SESSIONKEY,"w")
             sk.write(session)
             sk.close()
@@ -409,7 +410,7 @@ class mlbGame:
         status = soup.find('status-code').string
 
         try:
-            session = el.find(utag + ['session-key']).text
+            session = soup.find('session-key').string
             sk = open(SESSIONKEY,"w")
             sk.write(session_key)
         except:
@@ -419,10 +420,18 @@ class mlbGame:
             raise Exception,error_str
             
         if content_id is None:
-            for stream in el.findall('*/' + utag + 'user-verified-content'):
-                type = stream.find(utag + 'type').text
-                if type == 'video':
-                    content_id = stream.find(utag + 'content-id').text
+            items = soup.findAll('user-verified-media-item')
+            for item in items:
+                if item('type')[0].string == 'video' and item('playback-scenario')[0].string == __settings__.getSetting('scenario'):
+                    try:
+                        content_id = item('content-id')[0].string
+                    except:
+                        pass
+            # for stream in el.findall('*/' + utag + 'user-verified-content'):
+                # type = stream.find(utag + 'type').text
+                # if type == 'video':
+                    # content_id = stream.find(utag + 'content-id').text
+             
         else:
             print "Using content_id from arguments: " + content_id
 
@@ -455,8 +464,10 @@ class mlbGame:
 
         #print reply[0][0]['user-verified-content'][0]['content-id']
         #game_url = reply[0][0]['user-verified-content'][0]['user-verified-media-item'][0]['url'][0]
-        game_url = el.find('%suser-verified-event/%suser-verified-content/%suser-verified-media-item/%surl' %\
-            (utag, utag, utag, utag)).text
+        # game_url = el.find('%suser-verified-event/%suser-verified-content/%suser-verified-media-item/%surl' %\
+            # (utag, utag, utag, utag)).text
+        game_url = soup.findAll('user-verified-content')[0]('user-verified-media-item')[0]('url')[0].string
+        print '$$$$$----------> game_url: '+game_url
 
         try:
             if play_path is None:
