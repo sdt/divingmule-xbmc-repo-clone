@@ -375,10 +375,10 @@ class mlbGame:
         print "ipid = " + str(cookies['ipid']) + " fingerprint = " + str(cookies['fprt'])
         try:
             print "session-key = " + str(cookies['ftmu'])
-            session = urllib.unquote(cookies['ftmu'])
+            session_key = urllib.unquote(cookies['ftmu'])
             print'!!!!!!!!!------------>'+sesion
             sk = open(SESSIONKEY,"w")
-            sk.write(session)
+            sk.write(session_key)
             sk.close()
 
         except:
@@ -412,7 +412,7 @@ class mlbGame:
         status = soup.find('status-code').string
 
         try:
-            session = soup.find('session-key').string
+            session_key = soup.find('session-key').string
             sk = open(SESSIONKEY,"w")
             sk.write(session_key)
         except:
