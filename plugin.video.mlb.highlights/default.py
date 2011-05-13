@@ -429,50 +429,77 @@ def mlbGame(event_id,content_id):
         #game_url = reply[0][0]['user-verified-content'][0]['user-verified-media-item'][0]['url'][0]
         # game_url = el.find('%suser-verified-event/%suser-verified-content/%suser-verified-media-item/%surl' %\
             # (utag, utag, utag, utag)).text
-        game_url = soup.findAll('user-verified-content')[0]('user-verified-media-item')[0]('url')[0].string
-        print '$$$$$----------> game_url: '+game_url
-
-        try:
-            if play_path is None:
-                #play_path_pat = re.compile(r'ondemand\/(.*)\?')
-                play_path_pat = re.compile(r'ondemand\/(.*)$')
-                play_path = re.search(play_path_pat,game_url).groups()[0]
-                print "play_path = " + repr(play_path)
-                app_pat = re.compile(r'ondemand\/(.*)\?(.*)$')
-                app = "ondemand?_fcs_vhost=cp65670.edgefcs.net&akmfv=1.6"
-                app += re.search(app_pat,game_url).groups()[1]
-        except:
-            play_path = None
-        try:
-            if play_path is None:
-                live_sub_pat = re.compile(r'live\/mlb_c(.*)\?')
-                sub_path = re.search(live_sub_pat,game_url).groups()[0]
-                sub_path = 'mlb_c' + sub_path
-                live_play_pat = re.compile(r'live\/mlb_c(.*)$')
-                play_path = re.search(live_play_pat,game_url).groups()[0]
-                play_path = 'mlb_c' + play_path
-                app = "live?_fcs_vhost=cp65670.live.edgefcs.net&akmfv=1.6"
-                bSubscribe = True
+            
+        if str(soup.find('blackout-status').next) == '<notauthorizedstatus></notauthorizedstatus>':
+            print 'Status : Blackout'
+            try:
+                preview = soup.find('preview-url').contents[0]
+                print preview
+                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Blackout - Playing Preview','100000',"+icon+")")
+                return preview
+            except:
+                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Blackout - Playing Preview','100000',"+icon+")")
+                return    
+        
+        if str(soup.find('auth-status').next) == '<notauthorizedstatus></notauthorizedstatus>':
+            print 'Status : Not Authorized'
+            try:
+                preview = soup.find('preview-url').contents[0]
+                print preview
+                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Not Authorized - Playing Preview','10000',"+icon+")")
+                return preview
+            except:
+                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Not Authorized - Playing Preview','10000',"+icon+")")
+                return
                 
-        except:
-            play_path = None
-            sub_path = None
+        else:
+            try:
+                game_url = soup.findAll('user-verified-content')[0]('user-verified-media-item')[0]('url')[0].string
+                print '$$$$$----------> game_url: '+game_url
+            except:
+                print '-----------------> divingmule needs to work on the soup!'
 
-        print "url = " + str(game_url)
-        print "play_path = " + str(play_path)
-        app = 'app=live?_fcs_vhost=cp65670.live.edgefcs.net&akmfv=1.6'
-        swfurl = 'swfUrl="http://mlb.mlb.com/flash/mediaplayer/v4/RC91/MediaPlayer4.swf?v=4"'
-        subscribe = ' subscribe=' + str(sub_path)# + ' live=1'
-        url = str(game_url)+' '+swfurl+' '+str(play_path)+' '+app+' '+subscribe
-        print 'mlbGame URL----> '+url
-        return url
+            try:
+                if play_path is None:
+                    #play_path_pat = re.compile(r'ondemand\/(.*)\?')
+                    play_path_pat = re.compile(r'ondemand\/(.*)$')
+                    play_path = re.search(play_path_pat,game_url).groups()[0]
+                    print "play_path = " + repr(play_path)
+                    app_pat = re.compile(r'ondemand\/(.*)\?(.*)$')
+                    app = "ondemand?_fcs_vhost=cp65670.edgefcs.net&akmfv=1.6"
+                    app += re.search(app_pat,game_url).groups()[1]
+            except:
+                play_path = None
+            try:
+                if play_path is None:
+                    live_sub_pat = re.compile(r'live\/mlb_c(.*)\?')
+                    sub_path = re.search(live_sub_pat,game_url).groups()[0]
+                    sub_path = 'mlb_c' + sub_path
+                    live_play_pat = re.compile(r'live\/mlb_c(.*)$')
+                    play_path = re.search(live_play_pat,game_url).groups()[0]
+                    play_path = 'mlb_c' + play_path
+                    app = "live?_fcs_vhost=cp65670.live.edgefcs.net&akmfv=1.6"
+                    bSubscribe = True
+                    
+            except:
+                play_path = None
+                sub_path = None
 
-        theurl = 'http://cp65670.edgefcs.net/fcs/ident'
-        txheaders = {'User-agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13'}
-        data = None
-        req = urllib2.Request(theurl,data,txheaders)
-        response = urllib2.urlopen(req)
-        print response.read()
+            print "url = " + str(game_url)
+            print "play_path = " + str(play_path)
+            app = 'app=live?_fcs_vhost=cp65670.live.edgefcs.net&akmfv=1.6'
+            swfurl = 'swfUrl="http://mlb.mlb.com/flash/mediaplayer/v4/RC91/MediaPlayer4.swf?v=4"'
+            subscribe = ' subscribe=' + str(sub_path)# + ' live=1'
+            url = str(game_url)+' '+swfurl+' '+str(play_path)+' '+app+' '+subscribe
+            print 'mlbGame URL----> '+url
+            return url
+
+            theurl = 'http://cp65670.edgefcs.net/fcs/ident'
+            txheaders = {'User-agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13'}
+            data = None
+            req = urllib2.Request(theurl,data,txheaders)
+            response = urllib2.urlopen(req)
+            print response.read()
 
 
 class dateStr:
