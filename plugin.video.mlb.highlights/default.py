@@ -221,12 +221,12 @@ class mlbGame:
 
         app = None
 
-        session = None
+        session_key = None
 
-        if session is None:
+        if session_key is None:
             try:
                 sk = open(SESSIONKEY,"r")
-                session = sk.read()
+                session_key = sk.read()
                 sk.close()
             except:
                 print "no sessionkey file found."
@@ -395,7 +395,7 @@ class mlbGame:
 
         values = {
             'eventId': event_id, 
-            'sessionKey': session,
+            'sessionKey': session_key,
             'fingerprint': urllib.unquote(cookies['fprt']),
             'identityPointId': cookies['ipid'],
             'subject':'LIVE_EVENT_COVERAGE'
@@ -441,7 +441,7 @@ class mlbGame:
 
         values = {
             'subject':'LIVE_EVENT_COVERAGE',
-            'sessionKey': session,
+            'sessionKey': session_key,
             'identityPointId': cookies['ipid'],
             'contentId': content_id,
             'playbackScenario': SCENARIO,
