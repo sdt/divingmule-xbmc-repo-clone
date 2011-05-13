@@ -416,7 +416,7 @@ def mlbGame(event_id,content_id):
         print response
         #sys.exit()
         #el = xml.etree.ElementTree.XML(response)
-        soup = BeautifulStoneSoup(response, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+        soup = BeautifulStoneSoup(response)
         status = soup.find('status-code').string
         # utag = re.search('(\{.*\}).*', el.tag).group(1)
         # status = el.find(utag + 'status-code').text
