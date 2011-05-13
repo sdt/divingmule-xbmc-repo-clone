@@ -175,8 +175,8 @@ def setGameURL(event,content):
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
-class mlbGame:
-    def __init__(self,event_id,content_id):
+def mlbGame(event_id,content_id):
+
         SESSIONKEY = os.path.join( profile, 'sessionkey')
 
         SOAPCODES = {
@@ -190,28 +190,20 @@ class mlbGame:
             "-4000": "System Error",
         }
 
-
         bSubscribe = False
 
-        cj = None
-        cookielib = None
+        # cj = None
+        # cookielib = None
 
         try: 
             EVENT = event_id
         except:
-            #EVENT = '164-251363-2009-03-17'
-            #EVENT = '14-257635-2009-03-26'
-            #EVENT = '14-257676-2009-03-29'
-            EVENT = '164-251362-2009-03-16'
-
+            EVENT = None
         try:
             SCENARIO = __settings__.getSetting('scenario')
         except:
-            #SCENARIO = "MLB_FLASH_800K_STREAM"
             SCENARIO = "FLASH_800K_400X448"
-            #SCENARIO = "FLASH_1200K_800X448"
-            #SCENARIO = "FLASH_1800K_800X448"
-
+            
         try:
             content_id = content_id
         except:
@@ -237,43 +229,6 @@ class mlbGame:
         except:
             pass
          
-        try:
-           import cookielib
-        except ImportError:
-           raise Exception,"Could not load cookielib"
-
-        import urllib2
-        import urllib
-            
-            # divingmule - don't think i need this at the moment!
-        # conf = os.path.join( home, AUTHFILE)
-        # fp = open(conf)
-
-        # datadct = {'video_player': DEFAULT_PLAYER,
-                   # 'video_recorder': DEFAULT_RECORDER,
-                   # 'blackout': []}
-
-        # for line in fp:
-            # # Skip all the comments
-            # if line.startswith('#'):
-                # pass
-            # # Skip all the blank lines
-            # elif re.match(r'^\s*$',line):
-                # pass
-            # else:
-                # # Break at the first equals sign
-                # key, val = line.split('=')[0], '='.join(line.split('=')[1:])
-                # key = key.strip()
-                # val = val.strip()
-                # # These are the ones that take multiple values
-                # if key in ('blackout'):
-                    # datadct[key].append(val)
-                # # And these are the ones that only take one value, and so,
-                # # replace the defaults.
-                # else:
-                    # datadct[key] = val
-
-
         cj = cookielib.LWPCookieJar()
 
         if cj != None:
@@ -320,7 +275,6 @@ class mlbGame:
             print 'Here are the headers of the page :'
             print response.info()                             # handle.read() returns the page, handle.geturl() returns the true url of the page fetched (in case urlopen has followed any redirects, which it sometimes does)
 
-        print
         if cj == None:
             print "We don't have a cookie library available - sorry."
             print "I can't show you any cookies."
@@ -376,7 +330,6 @@ class mlbGame:
         try:
             print "session-key = " + str(cookies['ftmu'])
             session_key = urllib.unquote(cookies['ftmu'])
-            print'!!!!!!!!!------------>'+sesion
             sk = open(SESSIONKEY,"w")
             sk.write(session_key)
             sk.close()
@@ -404,7 +357,7 @@ class mlbGame:
             urllib.urlencode(values)
         req = urllib2.Request(theUrl, None, txheaders);
         response = urllib2.urlopen(req).read()
-        print response
+        #print response
         # el = xml.etree.ElementTree.XML(response)
         # utag = re.search('(\{.*\}).*', el.tag).group(1)
         # status = el.find(utag + 'status-code').text
@@ -421,21 +374,29 @@ class mlbGame:
             error_str = SOAPCODES[status]
             raise Exception,error_str
             
-        if content_id is None:
-            items = soup.findAll('user-verified-media-item')
-            for item in items:
-                if item('type')[0].string == 'video' and item('playback-scenario')[0].string == __settings__.getSetting('scenario'):
-                    try:
-                        content_id = item('content-id')[0].string
-                    except:
-                        pass
+        
+        content = []
+        items = soup.findAll('user-verified-content')
+        for item in items:
+            Type = item('type')[0].string
+            if Type == 'video':
+                try:
+                    content.append(item('content-id')[0].string)
+                except:
+                    pass
+        try:
+            content_id = content[0]
+            print 'content_id ----> : '+content_id
+        except:
+             print 'No content :/'
+             
             # for stream in el.findall('*/' + utag + 'user-verified-content'):
                 # type = stream.find(utag + 'type').text
                 # if type == 'video':
                     # content_id = stream.find(utag + 'content-id').text
              
-        else:
-            print "Using content_id from arguments: " + content_id
+        #else:
+            #print "Using content_id from arguments: " + content_id
 
         print "Event-id = " + str(event_id) + " and content-id = " + str(content_id)
 
@@ -452,7 +413,7 @@ class mlbGame:
             urllib.urlencode(values)
         req = urllib2.Request(theUrl, None, txheaders);
         response = urllib2.urlopen(req).read()
-        #print response
+        print response
         #sys.exit()
         #el = xml.etree.ElementTree.XML(response)
         soup = BeautifulStoneSoup(response)
