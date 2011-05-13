@@ -416,7 +416,7 @@ def mlbGame(event_id,content_id):
         print response
         #sys.exit()
         #el = xml.etree.ElementTree.XML(response)
-        soup = BeautifulStoneSoup(response)
+        soup = BeautifulStoneSoup(response, convertEntities=BeautifulSoup.XML_ENTITIES)
         status = soup.find('status-code').string
         # utag = re.search('(\{.*\}).*', el.tag).group(1)
         # status = el.find(utag + 'status-code').text
@@ -482,6 +482,10 @@ def mlbGame(event_id,content_id):
                     bSubscribe = True
                     
             except:
+                try:
+                    sub_path = str(game_url).split('/')[4].split('?')[0]
+                except:
+                    pass
                 play_path = None
                 sub_path = None
 
