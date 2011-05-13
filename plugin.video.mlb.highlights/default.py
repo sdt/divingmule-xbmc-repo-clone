@@ -416,7 +416,7 @@ def mlbGame(event_id,content_id):
         print response
         #sys.exit()
         #el = xml.etree.ElementTree.XML(response)
-        soup = BeautifulStoneSoup(response)
+        soup = BeautifulStoneSoup(response, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
         status = soup.find('status-code').string
         # utag = re.search('(\{.*\}).*', el.tag).group(1)
         # status = el.find(utag + 'status-code').text
@@ -490,7 +490,7 @@ def mlbGame(event_id,content_id):
             app = 'app=live?_fcs_vhost=cp65670.live.edgefcs.net&akmfv=1.6'
             swfurl = 'swfUrl="http://mlb.mlb.com/flash/mediaplayer/v4/RC91/MediaPlayer4.swf?v=4"'
             subscribe = ' subscribe=' + str(sub_path)# + ' live=1'
-            url = str(game_url)+' '+swfurl+' '+str(play_path)+' '+app+' '+subscribe
+            url = str(game_url)+' '+swfurl+' playpath='+str(play_path)+' '+app+' '+subscribe
             print 'mlbGame URL----> '+url
             return url
 
