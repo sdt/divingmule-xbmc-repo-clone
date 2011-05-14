@@ -10,12 +10,12 @@ profile = xbmc.translatePath(addon.getAddonInfo('profile'))
 home = __settings__.getAddonInfo('path')
 icon = xbmc.translatePath( os.path.join( home, 'icon.png' ) )
 
+print '(((((((((((((((((((  Revision r29    ))))))))))))))))'
 
 def categories():
-        if __settings__.getSetting('subscription')=='true':
-                addDir("Today's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[0]+'/master_scoreboard.json',6,icon)
-                addDir("Yesterday's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[1]+'/master_scoreboard.json',6,icon)
-                addDir("Tomorrow's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[2]+'/master_scoreboard.json',6,icon)
+        addDir("Today's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[0]+'/master_scoreboard.json',6,icon)
+        addDir("Yesterday's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[1]+'/master_scoreboard.json',6,icon)
+        addDir("Tomorrow's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[2]+'/master_scoreboard.json',6,icon)
         addDir('Play Latest Videos','',3,icon)
         addDir('Videos by Team','',4,icon)
         addDir('Latest Videos','http://mlb.mlb.com/ws/search/MediaSearchService?type=json&src=vpp&start=0&src=vpp&&hitsPerPage=60&sort=desc&sort_type=custom&src=vpp&hitsPerPage=60&src=vpp',1,icon)
@@ -159,9 +159,29 @@ def getGames(url):
                         content_id = game['game_media']['media'][1]['content_id']
                 except:
                         content_id = ''
-                name = home_team+' @ '+away_team+' '+status
+                try:
+                        free_game = game['game_media']['media']['free']
+                        if free_game == 'ALL':
+                                free = ' Free Game'
+                        else:
+                                free = ''
+                except:
+                            free = ''  
+
+                try:
+                        media_state = game['game_media']['media']['media_state']
+                except:
+                        try:
+                                media_state = game['game_media']['media'][0]['media_state']
+                        except:
+                                media_state = ''
+                        
+                name = home_team+' @ '+away_team+' - '+status+' '+free
                 u=sys.argv[0]+"?url=&mode=7&name="+urllib.quote_plus(name)+"&event="+urllib.quote_plus(event_id)+"&content="+urllib.quote_plus(content_id)
-                liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=thumb)
+                if media_state == 'media_on':
+                        liz=xbmcgui.ListItem( label=coloring( name,"green",name ),iconImage="DefaultVideo.png", thumbnailImage=thumb)
+                else:
+                        liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=thumb)
                 liz.setInfo( type="Video", infoLabels={ "Title": name } )
                 liz.setProperty('IsPlayable', 'true')
                 xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)                
@@ -429,27 +449,48 @@ def mlbGame(event_id,content_id):
         #game_url = reply[0][0]['user-verified-content'][0]['user-verified-media-item'][0]['url'][0]
         # game_url = el.find('%suser-verified-event/%suser-verified-content/%suser-verified-media-item/%surl' %\
             # (utag, utag, utag, utag)).text
+
+        if str(soup.find('state').string) == 'MEDIA_OFF':
+            print 'Status : Media Off'
+            try:
+                preview = soup.find('preview-url').contents[0]
+                if re.search('innings-index',str(preview)):
+                    print '------> research'
+                    raise Exception
+                    print preview
+                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Media Off - Playing Preview',10000,"+icon+")")
+                return preview
+            except:
+                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Media Off',5000,"+icon+")")
+                return 
+
             
-        if str(soup.find('blackout-status').next) == '<notauthorizedstatus></notauthorizedstatus>':
+        elif str(soup.find('blackout-status').next) == '<notauthorizedstatus></notauthorizedstatus>':
             print 'Status : Blackout'
             try:
                 preview = soup.find('preview-url').contents[0]
-                print preview
-                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Blackout - Playing Preview','100000',"+icon+")")
+                if re.search('innings-index',str(preview)):
+                    print '------> research'
+                    raise Exception
+                    print preview
+                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Blackout - Playing Preview',10000,"+icon+")")
                 return preview
             except:
-                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Blackout - Playing Preview','100000',"+icon+")")
+                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Blackout',5000,"+icon+")")
                 return    
         
-        if str(soup.find('auth-status').next) == '<notauthorizedstatus></notauthorizedstatus>':
+        elif str(soup.find('auth-status').next) == '<notauthorizedstatus></notauthorizedstatus>':
             print 'Status : Not Authorized'
             try:
                 preview = soup.find('preview-url').contents[0]
-                print preview
-                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Not Authorized - Playing Preview','10000',"+icon+")")
+                if re.search('innings-index',str(preview)):
+                    print '------> research'
+                    raise Exception
+                    print preview
+                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Not Authorized - Playing Preview',10000,"+icon+")")
                 return preview
             except:
-                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Not Authorized - Playing Preview','10000',"+icon+")")
+                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Not Authorized',5000,"+icon+")")
                 return
                 
         else:
@@ -484,6 +525,7 @@ def mlbGame(event_id,content_id):
             except:
                 try:
                     sub_path = str(game_url).split('/')[4].split('?')[0]
+                    print '----------------------> divingmules sub_path'
                 except:
                     pass
                 play_path = None
@@ -493,7 +535,7 @@ def mlbGame(event_id,content_id):
             print "play_path = " + str(play_path)
             app = 'app=live?_fcs_vhost=cp65670.live.edgefcs.net&akmfv=1.6'
             swfurl = 'swfUrl="http://mlb.mlb.com/flash/mediaplayer/v4/RC91/MediaPlayer4.swf?v=4"'
-            subscribe = ' subscribe=' + str(sub_path)# + ' live=1'
+            subscribe = ' subscribe=' + str(sub_path) + ' live=1'
             url = str(game_url)+' '+swfurl+' playpath='+str(play_path)+' '+app+' '+subscribe
             print 'mlbGame URL----> '+url
             return url
@@ -547,6 +589,29 @@ def get_params():
                                 
         return param
 
+        
+def coloring( text , color , colorword ):
+        if color == "white":
+            color="FFFFFFFF"
+        if color == "blue":
+            color="FF0000FF"
+        if color == "cyan":
+            color="FF00FFFF"
+        if color == "violet":
+            color="FFEE82EE"
+        if color == "pink":
+            color="FFFF1493"
+        if color == "red":
+            color="FFFF0000"
+        if color == "green":
+            color="FF00FF00"
+        if color == "yellow":
+            color="FFFFFF00"
+        if color == "orange":
+            color="FFFF4500"
+        colored_text = text.replace( colorword , "[COLOR=%s]%s[/COLOR]" % ( color , colorword ) )
+        return colored_text
+        
 
 def addLink(name,url,desc,mode,iconimage):
         u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
