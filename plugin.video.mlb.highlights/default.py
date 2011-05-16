@@ -10,7 +10,7 @@ profile = xbmc.translatePath(addon.getAddonInfo('profile'))
 home = __settings__.getAddonInfo('path')
 icon = xbmc.translatePath( os.path.join( home, 'icon.png' ) )
 
-print '(((((((((((((((((((  Revision r29    ))))))))))))))))'
+print '(((((((((((((((((((  Revision r30    ))))))))))))))))'
 
 def categories():
         addDir("Today's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[0]+'/master_scoreboard.json',6,icon)
@@ -192,7 +192,10 @@ def setGameURL(event,content):
         print 'Content ID---->'+content
         url = mlbGame(event,content)
         item = xbmcgui.ListItem(path=url)
-        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+        try:
+            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+        except:
+            xbmc.executebuiltin("XBMC.Notification('MLB','Unable to resolve URL',5000,"+icon+")")
 
 
 def mlbGame(event_id,content_id):
@@ -500,52 +503,62 @@ def mlbGame(event_id,content_id):
             except:
                 print '-----------------> divingmule needs to work on the soup!'
 
-            try:
-                if play_path is None:
-                    #play_path_pat = re.compile(r'ondemand\/(.*)\?')
-                    play_path_pat = re.compile(r'ondemand\/(.*)$')
-                    play_path = re.search(play_path_pat,game_url).groups()[0]
-                    print "play_path = " + repr(play_path)
-                    app_pat = re.compile(r'ondemand\/(.*)\?(.*)$')
-                    app = "ondemand?_fcs_vhost=cp65670.edgefcs.net&akmfv=1.6"
-                    app += re.search(app_pat,game_url).groups()[1]
-            except:
-                play_path = None
-            try:
-                if play_path is None:
-                    live_sub_pat = re.compile(r'live\/mlb_c(.*)\?')
-                    sub_path = re.search(live_sub_pat,game_url).groups()[0]
-                    sub_path = 'mlb_c' + sub_path
-                    live_play_pat = re.compile(r'live\/mlb_c(.*)$')
-                    play_path = re.search(live_play_pat,game_url).groups()[0]
-                    play_path = 'mlb_c' + play_path
-                    app = "live?_fcs_vhost=cp65670.live.edgefcs.net&akmfv=1.6"
-                    bSubscribe = True
+            # try:
+                # if play_path is None:
+                    # play_path_pat = re.compile(r'ondemand\/(.*)\?')
+                    # play_path_pat = re.compile(r'ondemand\/(.*)$')
+                    # play_path = re.search(play_path_pat,game_url).groups()[0]
+                    # print "play_path = " + repr(play_path)
+                    # app_pat = re.compile(r'ondemand\/(.*)\?(.*)$')
+                    # app = "ondemand?_fcs_vhost=cp65670.edgefcs.net&akmfv=1.6"
+                    # app += re.search(app_pat,game_url).groups()[1]
+            # except:
+                # play_path = None
+            # try:
+                # if play_path is None:
+                    # live_sub_pat = re.compile(r'live\/mlb_c(.*)\?')
+                    # sub_path = re.search(live_sub_pat,game_url).groups()[0]
+                    # sub_path = 'mlb_c' + sub_path
+                    # live_play_pat = re.compile(r'live\/mlb_c(.*)$')
+                    # play_path = re.search(live_play_pat,game_url).groups()[0]
+                    # play_path = 'mlb_c' + play_path
+                    # app = "live?_fcs_vhost=cp65670.live.edgefcs.net&akmfv=1.6"
+                    # bSubscribe = True
                     
-            except:
+            # except:
+                # pass
+
+            # print "url = " + str(game_url)
+            # print "play_path = " + str(play_path)
+            
+            
+            if re.search('ondemand', game_url):
+                play_path_pat = re.compile(r'ondemand\/(.*)$')
+                play_path = re.search(play_path_pat,game_url).groups()[0]
+                app = ' app=ondemand?_fcs_vhost=cp65670.edgefcs.net&akmfv=1.6'
+                app += game_url.split('?')[1]
+                subscribe = ''
+            if re.search('live/',str(game_url)):
+                live_play_pat = re.compile(r'live\/mlb_c(.*)$')
+                play_path = re.search(live_play_pat,game_url).groups()[0]
+                app = ' app=live?_fcs_vhost=cp65670.live.edgefcs.net&akmfv=1.6'
                 try:
                     sub_path = str(game_url).split('/')[4].split('?')[0]
-                    print '----------------------> divingmules sub_path'
+                    subscribe = ' subscribe=' + str(sub_path) + ' live=1'
                 except:
-                    pass
-                play_path = None
-                sub_path = None
-
-            print "url = " + str(game_url)
-            print "play_path = " + str(play_path)
-            app = 'app=live?_fcs_vhost=cp65670.live.edgefcs.net&akmfv=1.6'
-            swfurl = 'swfUrl="http://mlb.mlb.com/flash/mediaplayer/v4/RC91/MediaPlayer4.swf?v=4"'
-            subscribe = ' subscribe=' + str(sub_path) + ' live=1'
-            url = str(game_url)+' '+swfurl+' playpath='+str(play_path)+' '+app+' '+subscribe
+                    subscribe = ''
+                
+            swfurl = ' swfUrl="http://mlb.mlb.com/flash/mediaplayer/v4/RC91/MediaPlayer4.swf?v=4"'
+            url = str(game_url)+swfurl+' playpath='+str(play_path)+app+subscribe
             print 'mlbGame URL----> '+url
             return url
 
-            theurl = 'http://cp65670.edgefcs.net/fcs/ident'
-            txheaders = {'User-agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13'}
-            data = None
-            req = urllib2.Request(theurl,data,txheaders)
-            response = urllib2.urlopen(req)
-            print response.read()
+            # theurl = 'http://cp65670.edgefcs.net/fcs/ident'
+            # txheaders = {'User-agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13'}
+            # data = None
+            # req = urllib2.Request(theurl,data,txheaders)
+            # response = urllib2.urlopen(req)
+            # print response.read()
 
 
 class dateStr:
