@@ -10,7 +10,7 @@ profile = xbmc.translatePath(addon.getAddonInfo('profile'))
 home = __settings__.getAddonInfo('path')
 icon = xbmc.translatePath( os.path.join( home, 'icon.png' ) )
 
-print '(((((((((((((((((((  Revision r30    ))))))))))))))))'
+print '(((((((((((((((((((  Revision r31    ))))))))))))))))'
 
 def categories():
         addDir("Today's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[0]+'/master_scoreboard.json',6,icon)
@@ -144,10 +144,12 @@ def getGames(url):
                 status = game['status']['status']
                 if status == 'ind' or status == 'Preview':
                         status = str(game['time']) + ' ' + str(game['time_zone'])
+                        
                 try:
                         thumb = game['video_thumbnail']
                 except:
                         thumb = ''
+                        
                 try:
                         event_id = game['game_media']['media'][0]['calendar_event_id']
                 except:
@@ -155,10 +157,12 @@ def getGames(url):
                                 event_id = game['game_media']['media']['calendar_event_id']
                         except:
                                 event_id = ''
+                                
                 try:
                         content_id = game['game_media']['media'][1]['content_id']
                 except:
                         content_id = ''
+                        
                 try:
                         free_game = game['game_media']['media']['free']
                         if free_game == 'ALL':
@@ -175,14 +179,31 @@ def getGames(url):
                                 media_state = game['game_media']['media'][0]['media_state']
                         except:
                                 media_state = ''
-                        
+                                
+                if status == 'In Progress':
+                        try:
+                                desc = str(game['alerts']['text'])+' '+str(game['status']['inning_state'])+' '+str(game['status']['inning'])
+                        except:
+                                desc = ''
+                        try:
+                                inning = game['status']['inning_state']+' '+game['status']['inning']
+                        except:
+                                inning = ''
+                else:
+                        desc = ''
+                        inning = ''
+                
+                
+                description = desc        
                 name = home_team+' @ '+away_team+' - '+status+' '+free
                 u=sys.argv[0]+"?url=&mode=7&name="+urllib.quote_plus(name)+"&event="+urllib.quote_plus(event_id)+"&content="+urllib.quote_plus(content_id)
                 if media_state == 'media_on':
-                        liz=xbmcgui.ListItem( label=coloring( name,"green",name ),iconImage="DefaultVideo.png", thumbnailImage=thumb)
+                        label1=coloring( name,"green",name )
+                        label2=coloring( inning,"red",inning )
+                        liz=xbmcgui.ListItem( label=label1, label2=label2,iconImage="DefaultVideo.png", thumbnailImage=thumb)
                 else:
                         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=thumb)
-                liz.setInfo( type="Video", infoLabels={ "Title": name } )
+                liz.setInfo( type="Video", infoLabels={ "Title": name, "Description": description } )
                 liz.setProperty('IsPlayable', 'true')
                 xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)                
  
@@ -380,7 +401,7 @@ def mlbGame(event_id,content_id):
             urllib.urlencode(values)
         req = urllib2.Request(theUrl, None, txheaders);
         response = urllib2.urlopen(req).read()
-        #print response
+        print response
         # el = xml.etree.ElementTree.XML(response)
         # utag = re.search('(\{.*\}).*', el.tag).group(1)
         # status = el.find(utag + 'status-code').text
@@ -408,7 +429,7 @@ def mlbGame(event_id,content_id):
                 except:
                     pass
         try:
-            content_id = content[0]
+            content_id = content[1]
             print 'content_id ----> : '+content_id
         except:
              print 'No content :/'
@@ -537,19 +558,25 @@ def mlbGame(event_id,content_id):
                 play_path = re.search(play_path_pat,game_url).groups()[0]
                 app = ' app=ondemand?_fcs_vhost=cp65670.edgefcs.net&akmfv=1.6'
                 app += game_url.split('?')[1]
-                subscribe = ''
-            if re.search('live/',str(game_url)):
-                live_play_pat = re.compile(r'live\/mlb_c(.*)$')
-                play_path = re.search(live_play_pat,game_url).groups()[0]
-                app = ' app=live?_fcs_vhost=cp65670.live.edgefcs.net&akmfv=1.6'
+                url = str(game_url)+swfurl+' playpath='+str(play_path)+app
+                print '-----------ondemand-url'+url
+                return url
+                
+            if re.search('live/',game_url):
+                #live_play_pat = re.compile(r'live\/mlb_c(.*)$')
+                #play_path = re.search(live_play_pat,game_url).groups()[0]
+                rtmp = game_url.split('mlb_')[0]
+                play_path = ' playpath=mlb_'+game_url.split('mlb_')[1]
+                #app = ' app=live?_fcs_vhost=cp65670.live.edgefcs.net&akmfv=1.6'
                 try:
                     sub_path = str(game_url).split('/')[4].split('?')[0]
                     subscribe = ' subscribe=' + str(sub_path) + ' live=1'
                 except:
                     subscribe = ''
-                
-            swfurl = ' swfUrl="http://mlb.mlb.com/flash/mediaplayer/v4/RC91/MediaPlayer4.swf?v=4"'
-            url = str(game_url)+swfurl+' playpath='+str(play_path)+app+subscribe
+            
+                pageurl = ' pageUrl="http://mlb.mlb.com/flash/mediaplayer/v4.2/R6/MP4.jsp?calendar_event_id='+soup.find('event-id').string+'&content_id=&media_id=&view_key=&media_type=video&source=MLB&sponsor=MLB&clickOrigin=&affiliateId=&team=mlb&"'
+                swfurl = ' swfUrl="http://mlb.mlb.com/flash/mediaplayer/v4.2/R6/MediaPlayer4.swf?v=15'
+                url = rtmp[:-1]+swfurl+pageurl+play_path+' live=1'
             print 'mlbGame URL----> '+url
             return url
 
