@@ -1,7 +1,7 @@
 import urllib,urllib2,re,os,cookielib,datetime
 import xbmcplugin,xbmcgui,xbmcaddon
 import simplejson as json
-from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup
+from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup, BeautifulSOAP
 
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.mlb.highlights')
@@ -9,16 +9,31 @@ addon = xbmcaddon.Addon('plugin.video.mlb.highlights')
 profile = xbmc.translatePath(addon.getAddonInfo('profile'))
 home = __settings__.getAddonInfo('path')
 icon = xbmc.translatePath( os.path.join( home, 'icon.png' ) )
+SCENARIO = __settings__.getSetting('scenario')
+SESSIONKEY = os.path.join( profile, 'sessionkey')
+COOKIEFILE = os.path.join( profile, 'mlbcookie.lwp')
+SOAPCODES = {
+    "1"    : "OK",
+    "-1000": "Requested Media Not Found",
+    "-1500": "Other Undocumented Error",
+    "-2000": "Authentication Error",
+    "-2500": "Blackout Error",
+    "-3000": "Identity Error",
+    "-3500": "Sign-on Restriction Error",
+    "-4000": "System Error",
+    }
 
-print '(((((((((((((((((((  Revision r31    ))))))))))))))))'
+
+print '(((((((((((((((((((  Revision r32    ))))))))))))))))'
 
 def categories():
         addDir("Today's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[0]+'/master_scoreboard.json',6,icon)
         addDir("Yesterday's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[1]+'/master_scoreboard.json',6,icon)
         addDir("Tomorrow's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[2]+'/master_scoreboard.json',6,icon)
-        addDir('Play Latest Videos','',3,icon)
+        #addDir('Play Latest Videos','',3,icon)
+        addDir('MLB.com Realtime Highlights','http://gdx.mlb.com/components/game/mlb/'+dateStr.day[0]+'/media/highlights.xml',8,icon)
         addDir('Videos by Team','',4,icon)
-        addDir('Latest Videos','http://mlb.mlb.com/ws/search/MediaSearchService?type=json&src=vpp&start=0&src=vpp&&hitsPerPage=60&sort=desc&sort_type=custom&src=vpp&hitsPerPage=60&src=vpp',1,icon)
+        #addDir('Latest Videos','http://mlb.mlb.com/ws/search/MediaSearchService?type=json&src=vpp&start=0&src=vpp&&hitsPerPage=60&sort=desc&sort_type=custom&src=vpp&hitsPerPage=60&src=vpp',1,icon)
         addDir('FastCast','http://mlb.mlb.com/ws/search/MediaSearchService?mlbtax_key=fastcast&sort=desc&sort_type=date&hitsPerPage=200&src=vpp',1,icon)
         addDir('Must C','http://mlb.mlb.com/ws/search/MediaSearchService?mlbtax_key=must_c&sort=desc&sort_type=date&hitsPerPage=200&src=vpp',1,icon)
         addDir('Game Recaps','http://mlb.mlb.com/ws/search/MediaSearchService?&sort=desc&sort_type=date&subject=MLBCOM_GAME_RECAP&hitsPerPage=60&src=vpp',1,icon)
@@ -41,7 +56,29 @@ def getTeams():
                 url = str(team('a')[0]['href'])[-3:].replace('=','')
                 addDir(name,url,5,icon)
                 
-                
+
+def getRealtimeVideo(url):
+        try:
+            req = urllib2.Request(url)
+            req.addheaders = [('Referer', 'http://mlb.mlb.com/index.jsp'),
+                              ('Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0')]
+            response = urllib2.urlopen(req)
+            link=response.read()
+            response.close()
+            soup = BeautifulStoneSoup(link)
+            videos = soup.findAll('media')
+            for video in videos:
+                name = video.headline.string
+                vidId = video['id']
+                url = vidId[-3]+'/'+vidId[-2]+'/'+vidId[-1]+'/'+vidId
+                duration = video.duration.string
+                thumb = video.thumb.string
+                addLink(name,'http://mlb.mlb.com/gen/multimedia/detail/'+url+'.xml',duration,2,thumb)
+        except:
+            pass
+        addDir("Yesterday's MLB.com Realtime Highlights",'http://gdx.mlb.com/components/game/mlb/'+dateStr.day[1]+'/media/highlights.xml',8,icon)
+
+
 def getTeamVideo(url):
         url='http://mlb.mlb.com/gen/'+url+'/components/multimedia/topvideos.xml'
         req = urllib2.Request(url)
@@ -186,7 +223,8 @@ def getGames(url):
                         except:
                                 desc = ''
                         try:
-                                inning = game['status']['inning_state']+' '+game['status']['inning']
+                                inning = str(game['status']['inning_state'])+' '+str(game['status']['inning'])
+                                print '------------> there are innings'
                         except:
                                 inning = ''
                 else:
@@ -199,75 +237,17 @@ def getGames(url):
                 u=sys.argv[0]+"?url=&mode=7&name="+urllib.quote_plus(name)+"&event="+urllib.quote_plus(event_id)+"&content="+urllib.quote_plus(content_id)
                 if media_state == 'media_on':
                         label1=coloring( name,"green",name )
-                        label2=coloring( inning,"red",inning )
-                        liz=xbmcgui.ListItem( label=label1, label2=label2,iconImage="DefaultVideo.png", thumbnailImage=thumb)
+                        label2=coloring( inning,"blue",inning )
+                        liz=xbmcgui.ListItem( label1+' '+label2,iconImage="DefaultVideo.png", thumbnailImage=thumb)
+                        liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description } )
                 else:
                         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=thumb)
-                liz.setInfo( type="Video", infoLabels={ "Title": name, "Description": description } )
-                liz.setProperty('IsPlayable', 'true')
-                xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)                
+                        liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": description } )
+                xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)            
  
-
-def setGameURL(event,content):
-        print 'Event ID ----> '+event
-        print 'Content ID---->'+content
-        url = mlbGame(event,content)
-        item = xbmcgui.ListItem(path=url)
-        try:
-            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
-        except:
-            xbmc.executebuiltin("XBMC.Notification('MLB','Unable to resolve URL',5000,"+icon+")")
-
 
 def mlbGame(event_id,content_id):
 
-        SESSIONKEY = os.path.join( profile, 'sessionkey')
-
-        SOAPCODES = {
-            "1"    : "OK",
-            "-1000": "Requested Media Not Found",
-            "-1500": "Other Undocumented Error",
-            "-2000": "Authentication Error",
-            "-2500": "Blackout Error",
-            "-3000": "Identity Error",
-            "-3500": "Sign-on Restriction Error",
-            "-4000": "System Error",
-        }
-
-        bSubscribe = False
-
-        # cj = None
-        # cookielib = None
-
-        try: 
-            EVENT = event_id
-        except:
-            EVENT = None
-        try:
-            SCENARIO = __settings__.getSetting('scenario')
-        except:
-            SCENARIO = "FLASH_800K_400X448"
-            
-        try:
-            content_id = content_id
-        except:
-            content_id = None
-            
-        play_path = None
-
-        app = None
-
-        session_key = None
-
-        if session_key is None:
-            try:
-                sk = open(SESSIONKEY,"r")
-                session_key = sk.read()
-                sk.close()
-            except:
-                print "no sessionkey file found."
-
-        COOKIEFILE = os.path.join( profile, 'mlbcookie.lwp')
         try:
             os.remove(COOKIEFILE)
         except:
@@ -290,8 +270,11 @@ def mlbGame(event_id,content_id):
         response = urllib2.urlopen(req)
         print 'These are the cookies we have received so far :'
         for index, cookie in enumerate(cj):
-            print index, '  :  ', cookie        
-        cj.save(COOKIEFILE,ignore_discard=True) 
+            print index, '  :  ', cookie
+        try:
+            cj.save(COOKIEFILE,ignore_discard=True) 
+        except:
+            pass
 
         # now authenticate
         theurl = 'https://secure.mlb.com/authenticate.do'
@@ -313,7 +296,7 @@ def mlbGame(event_id,content_id):
            elif hasattr(e, 'reason'):
                print "The error object has the following 'reason' attribute :", e.reason
                print "This usually means the server doesn't exist, is down, or we don't have an internet connection."
-               sys.exit()
+               return
 
         else:
             print 'Here are the headers of the page :'
@@ -326,7 +309,10 @@ def mlbGame(event_id,content_id):
             print 'These are the cookies we have received so far :'
             for index, cookie in enumerate(cj):
                 print index, '  :  ', cookie        
-            cj.save(COOKIEFILE,ignore_discard=True) 
+            try:
+                cj.save(COOKIEFILE,ignore_discard=True) 
+            except:
+                pass
 
         page = response.read()
         pattern = re.compile(r'Welcome to your personal (MLB|mlb).com account.')
@@ -347,7 +333,7 @@ def mlbGame(event_id,content_id):
             name, value, standard, rest = tup
             cookies[name] = value
         print repr(cookies)
-        print "ipid = " + str(cookies['ipid']) + " fingerprint = " + str(cookies['fprt'])
+        #print "ipid = " + str(cookies['ipid']) + " fingerprint = " + str(cookies['fprt'])
         #print "session-key = " + str(cookies['ftmu'])
         #sys.exit()
         # End MORSEL extraction
@@ -370,7 +356,7 @@ def mlbGame(event_id,content_id):
             name, value, standard, rest = tup
             cookies[name] = value
         #print repr(cookies)
-        print "ipid = " + str(cookies['ipid']) + " fingerprint = " + str(cookies['fprt'])
+        #print "ipid = " + str(cookies['ipid']) + " fingerprint = " + str(cookies['fprt'])
         try:
             print "session-key = " + str(cookies['ftmu'])
             session_key = urllib.unquote(cookies['ftmu'])
@@ -379,6 +365,7 @@ def mlbGame(event_id,content_id):
             sk.close()
 
         except:
+            session_key = None
             logout_url = 'https://secure.mlb.com/enterworkflow.do?flowId=registration.logout&c_id=mlb'
             txheaders = {'User-agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13',
                      'Referer' : 'http://mlb.mlb.com/index.jsp'}
@@ -402,56 +389,59 @@ def mlbGame(event_id,content_id):
         req = urllib2.Request(theUrl, None, txheaders);
         response = urllib2.urlopen(req).read()
         print response
-        # el = xml.etree.ElementTree.XML(response)
-        # utag = re.search('(\{.*\}).*', el.tag).group(1)
-        # status = el.find(utag + 'status-code').text
-        soup = BeautifulStoneSoup(response)
-        status = soup.find('status-code').string
 
-        try:
-            session_key = soup.find('session-key').string
-            sk = open(SESSIONKEY,"w")
-            sk.write(session_key)
-        except:
-            print "no session-key found in reply"
+        soup = BeautifulSOAP(response)
+        status = soup.find('status-code').string
         if status != "1":
             error_str = SOAPCODES[status]
-            raise Exception,error_str
-            
-        
-        content = []
-        items = soup.findAll('user-verified-content')
+            xbmc.executebuiltin("XBMC.Notification('MLB','Status : "+error_str+"',10000,"+icon+")")
+            return
+
+        items = soup.findAll('user-verified-content', attrs={'type' : 'video'})
+        session = soup.find('session-key').string
+        event_id = soup.find('event-id').string
         for item in items:
-            Type = item('type')[0].string
-            if Type == 'video':
+                content_id = item('content-id')[0].string
+                blackout_status = item('blackout-status')[0].string
                 try:
-                    content.append(item('content-id')[0].string)
+                    blackout = item('blackout')[0].string.replace('_',' ')
                 except:
-                    pass
-        try:
-            content_id = content[1]
-            print 'content_id ----> : '+content_id
-        except:
-             print 'No content :/'
-             
-            # for stream in el.findall('*/' + utag + 'user-verified-content'):
-                # type = stream.find(utag + 'type').text
-                # if type == 'video':
-                    # content_id = stream.find(utag + 'content-id').text
-             
-        #else:
-            #print "Using content_id from arguments: " + content_id
+                    blackout = ''
+                call_letters = item('domain-attribute', attrs={'name' : "call_letters"})[0].string
+                if item('domain-attribute', attrs={'name' : "home_team_id"})[0].string == item('domain-attribute', attrs={'name' : "coverage_association"})[0].string:
+                    coverage = "Home Team Coverage"
+                elif item('domain-attribute', attrs={'name' : "away_team_id"})[0].string == item('domain-attribute', attrs={'name' : "coverage_association"})[0].string:
+                    coverage = "Away Team Coverage"
+                else:
+                    coverage = ''
+                if blackout_status == '<successstatus></successstatus>':
+                    name = coverage+' - '+call_letters
+                else:
+                    name = coverage+' '+call_letters+' '+blackout
+                    
+                u=sys.argv[0]+"?url=&mode=9&name="+urllib.quote_plus(name)+"&event="+urllib.quote_plus(event_id)+"&content="+urllib.quote_plus(content_id)+"&session="+urllib.quote_plus(session)+"&cookieIp="+urllib.quote_plus(cookies['ipid'])+"&cookieFp="+urllib.quote_plus(cookies['fprt'])
+                if blackout == '<successstatus></successstatus>':
+                        label1=coloring( name,"green",name )
+                        liz=xbmcgui.ListItem( label1,iconImage="DefaultVideo.png")
+                        liz.setInfo( type="Video", infoLabels={ "Title": name } )
+                else:
+                        liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png")
+                        liz.setInfo( type="Video", infoLabels={ "Title": name } )
+                liz.setProperty('IsPlayable', 'true')
+                xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)                      
 
-        print "Event-id = " + str(event_id) + " and content-id = " + str(content_id)
 
+def getGameURL(name,event,content,session,cookieIp,cookieFp):
+        print "Event-id = " + str(event) + " and content-id = " + str(content) + "Name = " + name + "Session = " + session + "cookieIp = " + cookieIp + "cookieFp = " + cookieFp
+        txheaders = {'User-agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13'}
         values = {
             'subject':'LIVE_EVENT_COVERAGE',
-            'sessionKey': session_key,
-            'identityPointId': cookies['ipid'],
-            'contentId': content_id,
+            'sessionKey': session,
+            'identityPointId': cookieIp,
+            'contentId': content,
             'playbackScenario': SCENARIO,
-            'eventId': event_id, 
-            'fingerprint': urllib.unquote(cookies['fprt']),
+            'eventId': event, 
+            'fingerprint': cookieFp,
         }
         theUrl = 'https://secure.mlb.com/pubajaxws/bamrest/MediaService2_0/op-findUserVerifiedEvent/v-2.1?' +\
             urllib.urlencode(values)
@@ -460,21 +450,17 @@ def mlbGame(event_id,content_id):
         print response
         #sys.exit()
         #el = xml.etree.ElementTree.XML(response)
-        soup = BeautifulStoneSoup(response, convertEntities=BeautifulSoup.XML_ENTITIES)
+        soup = BeautifulStoneSoup(response, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
         status = soup.find('status-code').string
         # utag = re.search('(\{.*\}).*', el.tag).group(1)
         # status = el.find(utag + 'status-code').text
 
         if status != "1":
             error_str = SOAPCODES[status]
-            raise Exception,error_str
+            xbmc.executebuiltin("XBMC.Notification('MLB','Status : "+error_str+"',10000,"+icon+")")
+            return
 
-        #print reply[0][0]['user-verified-content'][0]['content-id']
-        #game_url = reply[0][0]['user-verified-content'][0]['user-verified-media-item'][0]['url'][0]
-        # game_url = el.find('%suser-verified-event/%suser-verified-content/%suser-verified-media-item/%surl' %\
-            # (utag, utag, utag, utag)).text
-
-        if str(soup.find('state').string) == 'MEDIA_OFF':
+        if soup.find('state').string == 'MEDIA_OFF':
             print 'Status : Media Off'
             try:
                 preview = soup.find('preview-url').contents[0]
@@ -482,25 +468,33 @@ def mlbGame(event_id,content_id):
                     print '------> research'
                     raise Exception
                     print preview
-                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Media Off - Playing Preview',10000,"+icon+")")
-                return preview
+                else:
+                    xbmc.executebuiltin("XBMC.Notification('MLB','Status : "+blackout+" - Playing Preview',10000,"+icon+")")
+                    item = xbmcgui.ListItem(path=preview)
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
             except:
                 xbmc.executebuiltin("XBMC.Notification('MLB','Status : Media Off',5000,"+icon+")")
                 return 
 
             
-        elif str(soup.find('blackout-status').next) == '<notauthorizedstatus></notauthorizedstatus>':
-            print 'Status : Blackout'
+        elif str(soup.find('blackout-status').next) != '<successstatus></successstatus>':
+            try:
+                blackout = item('blackout')[0].string.replace('_',' ')
+            except:
+                blackout = 'Blackout'
             try:
                 preview = soup.find('preview-url').contents[0]
                 if re.search('innings-index',str(preview)):
                     print '------> research'
                     raise Exception
                     print preview
-                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Blackout - Playing Preview',10000,"+icon+")")
-                return preview
+                else:
+                    xbmc.executebuiltin("XBMC.Notification('MLB','Status : "+blackout+" - Playing Preview',10000,"+icon+")")
+                    item = xbmcgui.ListItem(path=preview)
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
             except:
-                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Blackout',5000,"+icon+")")
+
+                xbmc.executebuiltin("XBMC.Notification('MLB','Status : "+blackout+"',5000,"+icon+")")
                 return    
         
         elif str(soup.find('auth-status').next) == '<notauthorizedstatus></notauthorizedstatus>':
@@ -511,8 +505,10 @@ def mlbGame(event_id,content_id):
                     print '------> research'
                     raise Exception
                     print preview
-                xbmc.executebuiltin("XBMC.Notification('MLB','Status : Not Authorized - Playing Preview',10000,"+icon+")")
-                return preview
+                else:
+                    xbmc.executebuiltin("XBMC.Notification('MLB','Status : Not Authorized - Playing Preview',10000,"+icon+")")
+                    item = xbmcgui.ListItem(path=preview)
+                    xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
             except:
                 xbmc.executebuiltin("XBMC.Notification('MLB','Status : Not Authorized',5000,"+icon+")")
                 return
@@ -558,11 +554,13 @@ def mlbGame(event_id,content_id):
                 play_path = re.search(play_path_pat,game_url).groups()[0]
                 app = ' app=ondemand?_fcs_vhost=cp65670.edgefcs.net&akmfv=1.6'
                 app += game_url.split('?')[1]
+                swfurl = ' swfUrl="http://mlb.mlb.com/flash/mediaplayer/v4.2/R6/MediaPlayer4.swf?v=15'
                 url = str(game_url)+swfurl+' playpath='+str(play_path)+app
-                print '-----------ondemand-url'+url
-                return url
+                print '-----------ondemand-url = '+url
+                item = xbmcgui.ListItem(path=url)
+                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
                 
-            if re.search('live/',game_url):
+            elif re.search('live/',game_url):
                 #live_play_pat = re.compile(r'live\/mlb_c(.*)$')
                 #play_path = re.search(live_play_pat,game_url).groups()[0]
                 rtmp = game_url.split('mlb_')[0]
@@ -578,14 +576,8 @@ def mlbGame(event_id,content_id):
                 swfurl = ' swfUrl="http://mlb.mlb.com/flash/mediaplayer/v4.2/R6/MediaPlayer4.swf?v=15'
                 url = rtmp[:-1]+swfurl+pageurl+play_path+' live=1'
             print 'mlbGame URL----> '+url
-            return url
-
-            # theurl = 'http://cp65670.edgefcs.net/fcs/ident'
-            # txheaders = {'User-agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13'}
-            # data = None
-            # req = urllib2.Request(theurl,data,txheaders)
-            # response = urllib2.urlopen(req)
-            # print response.read()
+            item = xbmcgui.ListItem(path=url)
+            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
 
 
 class dateStr:
@@ -705,6 +697,18 @@ try:
         content=urllib.unquote_plus(params["content"])
 except:
         pass
+try:
+        session=urllib.unquote_plus(params["session"])
+except:
+        pass
+try:
+        cookieIp=urllib.unquote_plus(params["cookieIp"])
+except:
+        pass
+try:
+        cookieFp=urllib.unquote_plus(params["cookieFp"])
+except:
+        pass
 
         
 
@@ -742,6 +746,14 @@ if mode==6:
 
 if mode==7:
         print""		
-        setGameURL(event,content)
+        mlbGame(event,content)
+        
+if mode==8:
+        print""		
+        getRealtimeVideo(url)
+        
+if mode==9:
+        print""		
+        getGameURL(name,event,content,session,cookieIp,cookieFp)
         
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
