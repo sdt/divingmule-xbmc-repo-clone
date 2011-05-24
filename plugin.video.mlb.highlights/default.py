@@ -24,27 +24,27 @@ SOAPCODES = {
     }
 
 
-print '(((((((((((((((((((  Revision r32    ))))))))))))))))'
+print '(((((((((((((((((((  Revision r33    ))))))))))))))))'
 
 def categories():
         addDir("Today's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[0]+'/master_scoreboard.json',6,icon)
         addDir("Yesterday's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[1]+'/master_scoreboard.json',6,icon)
         addDir("Tomorrow's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[2]+'/master_scoreboard.json',6,icon)
-        #addDir('Play Latest Videos','',3,icon)
+        #addDir('Play Latest Videos','http://mlb.mlb.com/video/play.jsp?tcid=mm_mlb_vid',3,icon)
         addDir('MLB.com Realtime Highlights','http://gdx.mlb.com/components/game/mlb/'+dateStr.day[0]+'/media/highlights.xml',8,icon)
         addDir('Videos by Team','',4,icon)
-        #addDir('Latest Videos','http://mlb.mlb.com/ws/search/MediaSearchService?type=json&src=vpp&start=0&src=vpp&&hitsPerPage=60&sort=desc&sort_type=custom&src=vpp&hitsPerPage=60&src=vpp',1,icon)
+        addDir('Latest Videos','http://mlb.mlb.com/video/play.jsp?tcid=mm_mlb_vid',10,icon)
         addDir('FastCast','http://mlb.mlb.com/ws/search/MediaSearchService?mlbtax_key=fastcast&sort=desc&sort_type=date&hitsPerPage=200&src=vpp',1,icon)
         addDir('Must C','http://mlb.mlb.com/ws/search/MediaSearchService?mlbtax_key=must_c&sort=desc&sort_type=date&hitsPerPage=200&src=vpp',1,icon)
         addDir('Game Recaps','http://mlb.mlb.com/ws/search/MediaSearchService?&sort=desc&sort_type=date&subject=MLBCOM_GAME_RECAP&hitsPerPage=60&src=vpp',1,icon)
         addDir('MLB Network','http://mlb.mlb.com/ws/search/MediaSearchService?mlbtax_key=mlb_network&sort=desc&sort_type=date&hitsPerPage=360&src=vpp',1,icon)
         addDir('Top Plays','http://mlb.mlb.com/ws/search/MediaSearchService?&sort=desc&sort_type=date&subject=MLBCOM_TOP_PLAY&hitsPerPage=60&src=vpp',1,icon)
-
+        addDir("Baseball's Best Moments",'http://mlb.mlb.com/video/play.jsp?topic_id=7759164',10,icon)
 
 def getTeams():
         url='http://mlb.mlb.com/video/index.jsp'
         req = urllib2.Request(url)
-        req.addheaders = [('Referer', ''),
+        req.addheaders = [('Referer', 'http://mlb.mlb.com'),
                 ('Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3')]
         response = urllib2.urlopen(req)
         link=response.read()
@@ -82,7 +82,7 @@ def getRealtimeVideo(url):
 def getTeamVideo(url):
         url='http://mlb.mlb.com/gen/'+url+'/components/multimedia/topvideos.xml'
         req = urllib2.Request(url)
-        req.addheaders = [('Referer', ''),
+        req.addheaders = [('Referer', 'http://mlb.mlb.com'),
                 ('Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3')]
         response = urllib2.urlopen(req)
         link=response.read()
@@ -102,9 +102,30 @@ def getTeamVideo(url):
                 desc = video('big_blurb')[0].string
                 addTeamLink(name,url,desc,duration,thumb)
         
+
+def scrapeWebsite(url):
+        req = urllib2.Request(url)
+        response = urllib2.urlopen(req)
+        req.addheaders = [('Referer', 'http://mlb.mlb.com'),
+                ('Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3')]
+        link=response.read()
+        response.close()
+        soup = BeautifulSoup(link, convertEntities=BeautifulSoup.HTML_ENTITIES)
+        videos = soup.find('div', attrs={'id' : "playlistWrap"})('li')
+        for video in videos:
+            name = video('p')[0].string
+            try:
+                thumb = video('img')[0]['data-src']
+            except:
+                thumb = video('img')[0]['src']
+            content = video('a')[0]['rel']
+            url = content[-3]+'/'+content[-2]+'/'+content[-1]+'/'+content
+            duration = video('div', attrs={'class' : "duration"})[0].string[-5:]
+            addLink(name,'http://mlb.mlb.com/gen/multimedia/detail/'+url+'.xml',duration,2,thumb)
+
         
-def playLatest():
-        req = urllib2.Request('http://mlb.mlb.com/ws/search/MediaSearchService?type=json&src=vpp&start=0&src=vpp&&hitsPerPage=60&sort=desc&sort_type=custom&src=vpp&hitsPerPage=60&src=vpp')
+def playLatest(url):
+        req = urllib2.Request(url)
         req.addheaders = [('Referer', 'http://mlb.mlb.com/video/play.jsp?cid=mlb'),
                 ('Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0')]
         response = urllib2.urlopen(req)
@@ -138,7 +159,7 @@ def getVideos(url):
                 desc = video['bigBlurb']
                 url = video['url']
                 thumb = video['thumbnails'][2]['src']
-                addLink(name,url,desc,2,thumb)
+                addLink(name,url,'',2,thumb)
 
 
 def setVideoURL(url):
@@ -233,7 +254,7 @@ def getGames(url):
                 
                 
                 description = desc        
-                name = home_team+' @ '+away_team+' - '+status+' '+free
+                name = away_team+' @ '+home_team+' - '+status+' '+free
                 u=sys.argv[0]+"?url=&mode=7&name="+urllib.quote_plus(name)+"&event="+urllib.quote_plus(event_id)+"&content="+urllib.quote_plus(content_id)
                 if media_state == 'media_on':
                         label1=coloring( name,"green",name )
@@ -645,11 +666,11 @@ def coloring( text , color , colorword ):
         return colored_text
         
 
-def addLink(name,url,desc,mode,iconimage):
+def addLink(name,url,duration,mode,iconimage):
         u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-        liz.setInfo( type="Video", infoLabels={ "Title": name, "Plot": desc } )
+        liz.setInfo( type="Video", infoLabels={ "Title": name, "duration": duration } )
         liz.setProperty('IsPlayable', 'true')
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
         return ok
@@ -755,5 +776,9 @@ if mode==8:
 if mode==9:
         print""		
         getGameURL(name,event,content,session,cookieIp,cookieFp)
+        
+if mode==10:
+        print""
+        scrapeWebsite(url)
         
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
