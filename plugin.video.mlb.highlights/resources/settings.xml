@@ -1,8 +1,0 @@
-<settings>
-  <category label="MLB.TV">
-    <setting id="subscription" type="bool" label="Enable MLB.TV Subscription Content" default="false"/>
-    <setting id="email" type="text" label="Email Address" default="" enable="!eq(-1,false)"/>
-    <setting id="password" type="text" label="Password" default="" option="hidden" enable="!eq(-2,false)"/>
-    <setting id="scenario" type="select" label="Playback Quality" values="FLASH_800K_400X448|FLASH_1200K_800X448|FLASH_1800K_800X448" default="FLASH_800K_400X448" enable="!eq(-3,false)"/>
-  </category>
-</settings>
