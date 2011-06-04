@@ -1,9 +1,7 @@
 <settings>
-   <setting id="local_file" type="bool" label="Show Local File" default="true"/>
-   <setting id="xml_file" type="file"  source="files" label="Locate Your XML File" default="" enable="eq(-1,true)"/>
-   <setting id="community_list" type="bool" label="Show Community List" default="true"/>
-   <setting id="get_xml" type="text" label="Enter URL of a XML File" default=""/>
-   <setting id="get_xml_name" type="text" label="Name" default="Change Me"/>
+   <setting id="community_list" type="bool" label="Use Community List" default="true"/>
+   <setting id="save_location" type="folder"  label="Select a location to save files." default="" enable="eq(-1,true)"/>
+   <setting id="xml_file" type="file"  source="files" label="Choose File" default="" />
    <setting id="mirror_link" type="bool" label="Use lower quality mirror if available" default="false"/>
    <setting id="mirror_link_low" type="bool" label="Use lowest quality mirror if available" default="false" enable="eq(-1,false)"/> 
 </settings>
