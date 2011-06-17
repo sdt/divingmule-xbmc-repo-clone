@@ -25,22 +25,27 @@
 
 import urllib,urllib2,re,os,cookielib,datetime
 import xbmcplugin,xbmcgui,xbmcaddon
-import simplejson as json
+try:
+    import json
+except:
+    import simplejson as json
 from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup, BeautifulSOAP
 
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.mlbmc')
+__language__ = __settings__.getLocalizedString
 addon = xbmcaddon.Addon('plugin.video.mlbmc')
 profile = xbmc.translatePath(addon.getAddonInfo('profile'))
 home = __settings__.getAddonInfo('path')
 icon = xbmc.translatePath( os.path.join( home, 'icon.png' ) )
 fanart = xbmc.translatePath( os.path.join( home, 'fanart.jpg' ) )
-fanart1 = xbmc.translatePath( os.path.join( home, 'resources/mlbtv-fanart.jpg' ) )
+fanart1 = 'http://mlbmc-xbmc.googlecode.com/svn/icons/fanart1.jpg'
+fanart2 = 'http://mlbmc-xbmc.googlecode.com/svn/icons/fanart2.jpg'
 debug = __settings__.getSetting('debug')
 
 
 if debug == "true":
-    print '(((((((((( Version 0.0.0 ))))))))))'
+    print '(((((((((( Version 0.0.1 ))))))))))'
 
 SOAPCODES = {
     "1"    : "OK",
@@ -86,27 +91,27 @@ TeamCodes = {
     }
 
 def categories():
-        addDir('MLB.TV','',3,xbmc.translatePath( os.path.join( home, 'resources/mlbtv.png' ) ))
-        addPlaylist('Play Latest Videos','http://mlb.mlb.com/video/play.jsp?tcid=mm_mlb_vid',12,xbmc.translatePath( os.path.join( home, 'resources/mlb.com.png' ) ))
-        addDir('Top Videos by Team','',4,xbmc.translatePath( os.path.join( home, 'resources/teams.png' ) ))
-        addDir('FastCast','http://mlb.mlb.com/ws/search/MediaSearchService?mlbtax_key=fastcast&sort=desc&sort_type=date&hitsPerPage=200&src=vpp',1,xbmc.translatePath( os.path.join( home, 'resources/fastcast.png' ) ))
-        addDir('Must C','http://mlb.mlb.com/ws/search/MediaSearchService?mlbtax_key=must_c&sort=desc&sort_type=date&hitsPerPage=200&src=vpp',1,xbmc.translatePath( os.path.join( home, 'resources/mustc.png' ) ))
-        addDir('Game Recaps','http://mlb.mlb.com/ws/search/MediaSearchService?&sort=desc&sort_type=date&subject=MLBCOM_GAME_RECAP&hitsPerPage=60&src=vpp',1,xbmc.translatePath( os.path.join( home, 'resources/recap.png' ) ))
-        addDir('MLB Network','http://mlb.mlb.com/ws/search/MediaSearchService?mlbtax_key=mlb_network&sort=desc&sort_type=date&hitsPerPage=360&src=vpp',1,xbmc.translatePath( os.path.join( home, 'resources/network.png' ) ))
-        addDir('Top Plays','http://mlb.mlb.com/ws/search/MediaSearchService?&sort=desc&sort_type=date&subject=MLBCOM_TOP_PLAY&hitsPerPage=60&src=vpp',1,xbmc.translatePath( os.path.join( home, 'resources/mlb.com.png' ) ))
-        addDir('MLB.com Realtime Highlights','http://gdx.mlb.com/components/game/mlb/'+dateStr.day[0]+'/media/highlights.xml',8,xbmc.translatePath( os.path.join( home, 'resources/mlb.com.png' ) ))
-        addDir("Baseball's Best Moments",'http://mlb.mlb.com/video/play.jsp?topic_id=7759164',10,xbmc.translatePath( os.path.join( home, 'resources/mlb.com.png' ) ))
+        addDir(__language__(30000),'',3,'http://mlbmc-xbmc.googlecode.com/svn/icons/mlb.tv.png')
+        addPlaylist(__language__(30001),'http://mlb.mlb.com/video/play.jsp?tcid=mm_mlb_vid',12,'http://mlbmc-xbmc.googlecode.com/svn/icons/latestvid.png')
+        addDir(__language__(30002),'',4,'http://mlbmc-xbmc.googlecode.com/svn/icons/tvideo.png')
+        addDir(__language__(30003),'http://mlb.mlb.com/ws/search/MediaSearchService?mlbtax_key=fastcast&sort=desc&sort_type=date&hitsPerPage=200&src=vpp',1,'http://mlbmc-xbmc.googlecode.com/svn/icons/fc.png')
+        addDir(__language__(30004),'http://mlb.mlb.com/ws/search/MediaSearchService?mlbtax_key=must_c&sort=desc&sort_type=date&hitsPerPage=200&src=vpp',1,'http://mlbmc-xbmc.googlecode.com/svn/icons/mc.png')
+        addDir(__language__(30005),'http://mlb.mlb.com/ws/search/MediaSearchService?&sort=desc&sort_type=date&subject=MLBCOM_GAME_RECAP&hitsPerPage=60&src=vpp',1,'http://mlbmc-xbmc.googlecode.com/svn/icons/gamere.png')
+        addDir(__language__(30006),'http://mlb.mlb.com/ws/search/MediaSearchService?mlbtax_key=mlb_network&sort=desc&sort_type=date&hitsPerPage=360&src=vpp',1,'http://mlbmc-xbmc.googlecode.com/svn/icons/mlbnet.png')
+        addDir(__language__(30007),'http://mlb.mlb.com/ws/search/MediaSearchService?&sort=desc&sort_type=date&subject=MLBCOM_TOP_PLAY&hitsPerPage=60&src=vpp',1,'http://mlbmc-xbmc.googlecode.com/svn/icons/tp.png')
+        addDir(__language__(30008),'http://gdx.mlb.com/components/game/mlb/'+dateStr.day[0]+'/media/highlights.xml',8,'http://mlbmc-xbmc.googlecode.com/svn/icons/realtime.png')
+        addDir(__language__(30009),'http://mlb.mlb.com/video/play.jsp?topic_id=7759164',10,'http://mlbmc-xbmc.googlecode.com/svn/icons/bball.png')
 
 
 def mlbTV():
         if __settings__.getSetting('email') != "":
-            addGameDir("Today's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[0]+'/master_scoreboard.json',6,xbmc.translatePath( os.path.join( home, 'resources/mlbtv.png' ) ))
-            addGameDir("Yesterday's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[1]+'/master_scoreboard.json',6,xbmc.translatePath( os.path.join( home, 'resources/mlbtv.png' ) ))
-            addGameDir("The day before Yesterday's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[3]+'/master_scoreboard.json',6,xbmc.translatePath( os.path.join( home, 'resources/mlbtv.png' ) ))
-            addGameDir("Tomorrow's Games",'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[2]+'/master_scoreboard.json',6,xbmc.translatePath( os.path.join( home, 'resources/mlbtv.png' ) ))
-            addGameDir('Enter a Date','',11,xbmc.translatePath( os.path.join( home, 'resources/mlbtv.png' ) ))
+            addGameDir(__language__(30010),'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[0]+'/master_scoreboard.json',6,'http://mlbmc-xbmc.googlecode.com/svn/icons/mlb.tv.png')
+            addGameDir(__language__(30011),'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[1]+'/master_scoreboard.json',6,'http://mlbmc-xbmc.googlecode.com/svn/icons/mlb.tv.png')
+            addGameDir(__language__(30012),'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[3]+'/master_scoreboard.json',6,'http://mlbmc-xbmc.googlecode.com/svn/icons/mlb.tv.png')
+            addGameDir(__language__(30013),'http://mlb.mlb.com/gdcross/components/game/mlb/'+dateStr.day[2]+'/master_scoreboard.json',6,'http://mlbmc-xbmc.googlecode.com/svn/icons/mlb.tv.png')
+            addGameDir(__language__(30014),'',11,'http://mlbmc-xbmc.googlecode.com/svn/icons/mlb.tv.png')
         else:
-            xbmc.executebuiltin("XBMC.Notification(MLB,This section requires at minimum a free mlb.com account. If you want to look around add anything in the email setting.,30000,"+icon+")")
+            xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30016)+",30000,"+icon+")")
             __settings__.openSettings()
 
 
@@ -115,7 +120,7 @@ def getTeams():
         for team in teams:
             name = team[0]
             url = team[1]
-            addPlaylist(name,url,5,xbmc.translatePath( os.path.join( home, 'resources/teams.png' ) ))
+            addPlaylist(name,url,5,'http://mlbmc-xbmc.googlecode.com/svn/icons/tvideo.png')
 
 
 def getRealtimeVideo(url):
@@ -138,7 +143,7 @@ def getRealtimeVideo(url):
                 addLink(name,'http://mlb.mlb.com/gen/multimedia/detail/'+url+'.xml',duration,2,thumb)
         except:
             pass
-        addDir("Yesterday's MLB.com Realtime Highlights",'http://gdx.mlb.com/components/game/mlb/'+dateStr.day[1]+'/media/highlights.xml',8,icon)
+        addDir(__language__(30017),'http://gdx.mlb.com/components/game/mlb/'+dateStr.day[1]+'/media/highlights.xml',8,icon)
 
 
 def getTeamVideo(url):
@@ -232,9 +237,9 @@ def getVideos(url):
                     print 'Reason: ', e.reason
                 if hasattr(e, 'code'):
                     print 'We failed with error code - %s.' % e.code
-                xbmc.executebuiltin("XBMC.Notification(MLB,HTTP Error : "+errorStr+",10000,"+icon+")")
+                xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30018)+errorStr+",10000,"+icon+")")
             else:
-                xbmc.executebuiltin("XBMC.Notification(MLB,HTTP Error : "+errorStr+",10000,"+icon+")")
+                xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30018)+errorStr+",10000,"+icon+")")
         data = json.loads(link)
         videos = data['mediaContent']
         for video in videos:
@@ -349,10 +354,13 @@ def getGames(url):
 
 
 def mlbGame(event_id,content_id):
+        if debug == "true":
+            print '-----install opener'
         cj = cookielib.LWPCookieJar()
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
         urllib2.install_opener(opener)
-
+        if debug == "true":
+            print '-----get first cookie'
         # Get the cookie first
         theurl = 'https://secure.mlb.com/enterworkflow.do?flowId=registration.wizard&c_id=mlb'
         txheaders = {'User-agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13'}
@@ -360,10 +368,11 @@ def mlbGame(event_id,content_id):
         req = urllib2.Request(theurl,data,txheaders)
         response = urllib2.urlopen(req)
         if debug == "true":
+            print response
             print 'These are the cookies we have received so far :'
             for index, cookie in enumerate(cj):
                 print index, '  :  ', cookie
-
+            print '-------logging in'
         # now authenticate
         theurl = 'https://secure.mlb.com/authenticate.do'
         txheaders = {'User-agent' : 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13',
@@ -384,7 +393,7 @@ def mlbGame(event_id,content_id):
             elif hasattr(e, 'reason'):
                 print "The error object has the following 'reason' attribute :", e.reason
                 print "This usually means the server doesn't exist, is down, or we don't have an internet connection."
-                xbmc.executebuiltin("XBMC.Notification('MLB','This usually means the server doesn't exist, is down, or we don't have an internet connection.',10000,"+icon+")")
+                xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30019)+",10000,"+icon+")")
                 return
 
         if debug == "true":
@@ -405,7 +414,7 @@ def mlbGame(event_id,content_id):
             loggedin = re.search(pattern, page).groups()
             print "Logged in successfully!"
         except:
-            xbmc.executebuiltin("XBMC.Notification(MLB,Log in Failed,5000,"+icon+")")
+            xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30020)+",5000,"+icon+")")
             pass
 
         # Begin MORSEL extraction
@@ -464,7 +473,7 @@ def mlbGame(event_id,content_id):
                 'subject':'LIVE_EVENT_COVERAGE'
             }
         except:
-            xbmc.executebuiltin("XBMC.Notification(MLB,Sorry - We didn't recive the required cookies,10000,"+icon+")")
+            xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30021)+",10000,"+icon+")")
 
         theUrl = 'https://secure.mlb.com/pubajaxws/bamrest/MediaService2_0/op-findUserVerifiedEvent/v-2.1?' +\
             urllib.urlencode(values)
@@ -477,11 +486,14 @@ def mlbGame(event_id,content_id):
         status = soup.find('status-code').string
         if status != "1":
             error_str = SOAPCODES[status]
-            xbmc.executebuiltin("XBMC.Notification(MLB,Status : "+error_str+",10000,"+icon+")")
+            xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30022)+error_str+",10000,"+icon+")")
             return
 
         items = soup.findAll('user-verified-content', attrs={'type' : 'video'})
-        session = soup.find('session-key').string
+        try:
+            session = soup.find('session-key').string
+        except:
+            session = ''
         event_id = soup.find('event-id').string
         for item in items:
             if soup.find('state').string == 'MEDIA_ARCHIVE':
@@ -560,7 +572,7 @@ def getGameURL(name,event,content,session,cookieIp,cookieFp):
 
         if status != "1":
             error_str = SOAPCODES[status]
-            xbmc.executebuiltin("XBMC.Notification(MLB, Status : "+error_str+",10000,"+icon+")")
+            xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30022)+error_str+",10000,"+icon+")")
             return
 
         elif soup.find('state').string == 'MEDIA_OFF':
@@ -573,11 +585,11 @@ def getGameURL(name,event,content,session,cookieIp,cookieFp):
                         print preview
                     raise Exception
                 else:
-                    xbmc.executebuiltin("XBMC.Notification(MLB, Status : Media Off - Playing Preview,15000,"+icon+")")
+                    xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30023)+",15000,"+icon+")")
                     item = xbmcgui.ListItem(path=preview)
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
             except:
-                xbmc.executebuiltin("XBMC.Notification(MLB,Status : Media Off,5000,"+icon+")")
+                xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30023)+",5000,"+icon+")")
                 return
 
 
@@ -594,12 +606,12 @@ def getGameURL(name,event,content,session,cookieIp,cookieFp):
                         print preview
                     raise Exception
                 else:
-                    xbmc.executebuiltin("XBMC.Notification('MLB','Status : "+blackout+" - Playing Preview',15000,"+icon+")")
+                    xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30022)+blackout+__language__(30024)+",15000,"+icon+")")
                     item = xbmcgui.ListItem(path=preview)
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
             except:
 
-                xbmc.executebuiltin("XBMC.Notification(MLB,Status : "+blackout+",5000,"+icon+")")
+                xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30022)+blackout+__language__(30024)+",5000,"+icon+")")
                 return
 
         elif str(soup.find('auth-status').next) == '<notauthorizedstatus></notauthorizedstatus>':
@@ -612,11 +624,11 @@ def getGameURL(name,event,content,session,cookieIp,cookieFp):
                         print preview
                     raise Exception
                 else:
-                    xbmc.executebuiltin("XBMC.Notification(MLB,Status : Not Authorized - Playing Preview,15000,"+icon+")")
+                    xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30025)+",15000,"+icon+")")
                     item = xbmcgui.ListItem(path=preview)
                     xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
             except:
-                xbmc.executebuiltin("XBMC.Notification(MLB,Status : Not Authorized,5000,"+icon+")")
+                xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30026)+",5000,"+icon+")")
                 return
 
         else:
@@ -628,7 +640,7 @@ def getGameURL(name,event,content,session,cookieIp,cookieFp):
                 if debug == "true":
                     print '-----------------> divingmule needs to work on the soup!'
                     print soup
-                xbmc.executebuiltin("XBMC.Notification(MLB,The url was not returned,5000,"+icon+")")
+                xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30027)+",5000,"+icon+")")
 
             if re.search('ondemand', game_url):
                 play_path_pat = re.compile(r'ondemand\/(.*)$')
@@ -661,7 +673,7 @@ def getDate():
             return
         date = keyboard.getText()
         if len(date) != 10:
-            xbmc.executebuiltin("XBMC.Notification('MLB','Invalid Date',5000,"+icon+")")
+            xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30028)+errorStr+",5000,"+icon+")")
             return
         date = 'year_'+date.split('/')[0]+'/month_'+date.split('/')[1]+'/day_'+date.split('/')[2]
         url = 'http://mlb.mlb.com/gdcross/components/game/mlb/'+date+'/master_scoreboard.json'
@@ -676,9 +688,9 @@ def getDate():
                     print 'Reason: ', e.reason
                 if hasattr(e, 'code'):
                     print 'We failed with error code - %s.' % e.code
-                xbmc.executebuiltin("XBMC.Notification('MLB','HTTP Error : "+errorStr+"',10000,"+icon+")")
+                xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30018)+errorStr+"',10000,"+icon+")")
             else:
-                xbmc.executebuiltin("XBMC.Notification('MLB','HTTP Error : "+errorStr+"',10000,"+icon+")")
+                xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+","+__language__(30018)+errorStr+"',10000,"+icon+")")
 
 
 class dateStr:
@@ -759,7 +771,7 @@ def addLink(name,url,duration,mode,iconimage):
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name, "duration": duration } )
         liz.setProperty('IsPlayable', 'true')
-        liz.setProperty( "Fanart_Image", fanart )
+        liz.setProperty( "Fanart_Image", fanart2 )
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
         return ok
 
@@ -779,7 +791,7 @@ def addGameDir(name,url,mode,iconimage):
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name } )
-        liz.setProperty( "Fanart_Image", fanart1 )
+        liz.setProperty( "Fanart_Image", fanart2 )
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
 
