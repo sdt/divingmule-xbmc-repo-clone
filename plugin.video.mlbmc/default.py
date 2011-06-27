@@ -45,7 +45,7 @@ debug = __settings__.getSetting('debug')
 
 
 if debug == "true":
-    print '(((((((((( Version 0.0.1 ))))))))))'
+    print '(((((((((( Version 0.0.2 ))))))))))'
 
 SOAPCODES = {
     "1"    : "OK",
@@ -92,6 +92,7 @@ TeamCodes = {
 
 def categories():
         addDir(__language__(30000),'',3,'http://mlbmc-xbmc.googlecode.com/svn/icons/mlb.tv.png')
+        addDir(__language__(30029),'',14,'http://mlbmc-xbmc.googlecode.com/svn/icons/condensed.png')
         addPlaylist(__language__(30001),'http://mlb.mlb.com/video/play.jsp?tcid=mm_mlb_vid',12,'http://mlbmc-xbmc.googlecode.com/svn/icons/latestvid.png')
         addDir(__language__(30002),'',4,'http://mlbmc-xbmc.googlecode.com/svn/icons/tvideo.png')
         addDir(__language__(30003),'http://mlb.mlb.com/ws/search/MediaSearchService?mlbtax_key=fastcast&sort=desc&sort_type=date&hitsPerPage=200&src=vpp',1,'http://mlbmc-xbmc.googlecode.com/svn/icons/fc.png')
@@ -115,6 +116,11 @@ def mlbTV():
             __settings__.openSettings()
 
 
+def condensedGames():
+            addGameDir(__language__(30011),'http://www.mlb.com/mediacenter/index.jsp?ymd='+dateStr.day[1].replace('year_','').replace('/month_','').replace('/day_',''),13,'http://mlbmc-xbmc.googlecode.com/svn/icons/condensed.png')
+            addGameDir(__language__(30012),'http://www.mlb.com/mediacenter/index.jsp?ymd='+dateStr.day[3].replace('year_','').replace('/month_','').replace('/day_',''),13,'http://mlbmc-xbmc.googlecode.com/svn/icons/condensed.png')
+            
+            
 def getTeams():
         teams = TeamCodes.values()
         for team in teams:
@@ -150,7 +156,7 @@ def getTeamVideo(url):
         url='http://mlb.mlb.com/gen/'+url+'/components/multimedia/topvideos.xml'
         req = urllib2.Request(url)
         req.addheaders = [('Referer', 'http://mlb.mlb.com'),
-                ('Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3')]
+                ('Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0')]
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
@@ -178,7 +184,7 @@ def scrapeWebsite(url):
         req = urllib2.Request(url)
         response = urllib2.urlopen(req)
         req.addheaders = [('Referer', 'http://mlb.mlb.com'),
-                ('Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3')]
+                ('Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0')]
         link=response.read()
         response.close()
         soup = BeautifulSoup(link, convertEntities=BeautifulSoup.HTML_ENTITIES)
@@ -199,7 +205,7 @@ def playLatest(url):
         req = urllib2.Request(url)
         response = urllib2.urlopen(req)
         req.addheaders = [('Referer', 'http://mlb.mlb.com'),
-                ('Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3')]
+                ('Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0')]
         link=response.read()
         response.close()
         soup = BeautifulSoup(link, convertEntities=BeautifulSoup.HTML_ENTITIES)
@@ -272,6 +278,24 @@ def getVideoURL(url):
             url = soup.find('url', attrs={'playback_scenario' : "FLASH_600K_400X224"}).string
         return url
 
+
+def getCondensedGames(url):
+        req = urllib2.Request(url)
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        soup = BeautifulSoup(link, convertEntities=BeautifulSoup.HTML_ENTITIES)
+        videos = soup.findAll('tbody')[0]('tr')
+        for video in videos:
+            try:
+                name = video('td', attrs={'class' : "mmg_matchup"})[0].string
+                content = video('td', attrs={'class' : "mmg_condensed"})[0]('a')[0]['href'][-8:]
+                url = content[-3]+'/'+content[-2]+'/'+content[-1]+'/'+content
+                url = 'http://mlb.mlb.com/gen/multimedia/detail/'+url+'.xml'
+                addLink(name,url,'',2,'http://mlbmc-xbmc.googlecode.com/svn/icons/condensed.png')
+            except:
+                pass
+        
 
 def getGames(url):
         req = urllib2.Request(url)
@@ -906,5 +930,13 @@ if mode==11:
 if mode==12:
         print""
         playLatest(url)
+        
+if mode==13:
+        print""
+        getCondensedGames(url)
+        
+if mode==14:
+        print""
+        condensedGames()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
