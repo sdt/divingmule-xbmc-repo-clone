@@ -38,7 +38,7 @@
 
 <addon id="plugin.video.live.streams"
        name="LiveStreams"
-       version="0.0.7"
+       version="0.0.8"
        provider-name="divingmule">
   <requires>
     <import addon="xbmc.python" version="1.0"/>
@@ -49,7 +49,7 @@
         <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary></summary>
+    <summary>livestreams</summary>
     <description>It's up to you;) As an alternative to .strm files this add-on lets you add streams by adding items to an xml file. Thus giving you a nice list with thumbnails if you like.</description>
     <platform>all</platform>
   </extension>
