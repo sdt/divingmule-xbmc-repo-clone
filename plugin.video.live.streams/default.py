@@ -12,9 +12,20 @@ icon = xbmc.translatePath( os.path.join( home, 'icon.png' ) )
 fanart = xbmc.translatePath( os.path.join( home, 'fanart.jpg' ) )
 file = __settings__.getSetting('xml_file')
 if __settings__.getSetting('community_list') == "true":
-        if __settings__.getSetting('save_location') == "":
-                xbmc.executebuiltin("XBMC.Notification('LiveStreams','Choose a location to save files.',30000,"+icon+")")
-                __settings__.openSettings()
+    if __settings__.getSetting('save_location') == "":
+        xbmc.executebuiltin("XBMC.Notification('LiveStreams','Choose a location to save files.',30000,"+icon+")")
+        __settings__.openSettings()
+if __settings__.getSetting('community_list') == "false":
+    if __settings__.getSetting('get_xml') != "":
+        url = __settings__.getSetting('get_xml')
+        req = urllib2.Request(url)
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        file = link
+    else:
+        file = __settings__.getSetting('xml_file')
+
 
 def getSoup():
         req = urllib2.Request('http://community-links.googlecode.com/svn/trunk/')
@@ -76,14 +87,17 @@ if __settings__.getSetting('community_list') == "true":
         checkForUpdate()
 
 def getStreams():
-        try:
+        if __settings__.getSetting('community_list') == "true":
+            try:
                 response = open(file, 'rb')
-        except:
+            except:
                 xbmc.executebuiltin("XBMC.Notification('LiveStreams','Choose a file',30000,"+icon+")")
                 __settings__.openSettings()
                 return
-        link=response.read()
-        soup = BeautifulStoneSoup(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+            link=response.read()
+            soup = BeautifulStoneSoup(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+        elif __settings__.getSetting('get_xml') != "":
+            soup = BeautifulStoneSoup(file, convertEntities=BeautifulStoneSoup.XML_ENTITIES)        
         if len(soup('channels')) > 0:
                 channels = soup('channel')
                 for channel in channels:
@@ -95,9 +109,12 @@ def getStreams():
                 INDEX()
 
 def getChannels(url):
-        response = open(file, 'rb')
-        link=response.read()
-        soup = BeautifulStoneSoup(file, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+        if __settings__.getSetting('community_list') == "true":
+            response = open(file, 'rb')
+            link=response.read()
+            soup = BeautifulStoneSoup(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+        else:
+            soup = BeautifulStoneSoup(file, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
         channels = soup('channel')
         for channel in channels:
                 name = channel('name')[0].string
@@ -107,9 +124,13 @@ def getChannels(url):
                 INDEX()        
                         
 def getChannelItems(name):
-        response = open(file, 'rb')
-        link=response.read()
-        soup = BeautifulSOAP(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+        if __settings__.getSetting('community_list') == "true":
+            response = open(file, 'rb')
+            link=response.read()
+            soup = BeautifulSOAP(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+        else:
+            soup = BeautifulSOAP(file, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+            
         channel_list = soup.find('channel', attrs={'name' : name})
         items = channel_list('item')
         for channel in channel_list('subchannel'):
@@ -148,9 +169,12 @@ def getChannelItems(name):
                 addLink(url,name,thumbnail)
 
 def getSubChannelItems(name):
-        response = open(file, 'rb')
-        link=response.read()
-        soup = BeautifulSOAP(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+        if __settings__.getSetting('community_list') == "true":
+            response = open(file, 'rb')
+            link=response.read()
+            soup = BeautifulSOAP(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+        else:
+            soup = BeautifulSOAP(file, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
         channel_list = soup.find('subchannel', attrs={'name' : name})
         items = channel_list('subitem')
         for item in items:
@@ -186,9 +210,12 @@ def getSubChannelItems(name):
 
 
 def INDEX():
-        response = open(file, 'rb')
-        link=response.read()
-        soup = BeautifulStoneSoup(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+        if __settings__.getSetting('community_list') == "true":
+            response = open(file, 'rb')
+            link=response.read()
+            soup = BeautifulStoneSoup(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
+        else:
+            soup = BeautifulStoneSoup(file, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
         items = soup('item')
         for item in items:
                 try:
