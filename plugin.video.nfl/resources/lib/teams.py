@@ -141,7 +141,7 @@ def chargers():
 
 def eagles():
         fanart = 'http://farm7.static.flickr.com/6140/5995277769_52906f9e5d_o.jpg'
-        'http://farm7.static.flickr.com/6140/5995277769_fd13323507_m.jpg'
+        icon = 'http://farm7.static.flickr.com/6140/5995277769_fd13323507_m.jpg'
         urlA = 'http://www.philadelphiaeagles.com/cda-web/content-list-dynamic-module-paginated.htm?previewMode=false&displayName='
         urlB = '&contentListType=internal&contentType=VIDEO&sortField=DATE&showRelatedToContent=Yes&relatedClubs=PHI&clubRelatedTerms='
         urlC = '&relatedToId=&showImage=Yes&showDescription=Yes&showByline=Yes&showPublicationDate=Yes&showRSS=Yes&showContentType=No&showFilterType=month&showPagination=Yes&showPagerStatus=No&showCount=No&showTitleStyle=Yes&view=content-list-variation-2&month=&year=&numberPerPage=10&pageno=1'
