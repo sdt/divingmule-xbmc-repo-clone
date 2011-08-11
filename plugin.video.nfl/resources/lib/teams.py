@@ -1,11 +1,9 @@
 
-# Fanart images are from - Hawk Eyes' - http://www.flickr.com/photos/cpardue/sets/72157627232426473/  http://creativecommons.org/licenses/by-nc/2.0/deed.en
-# Icon images are from AStahrr - http://findicons.com/pack/539/nfl For noncommercial use
-
+# Fanart and icon images are from - Hawk Eyes' - http://www.flickr.com/photos/cpardue/sets/72157627232426473/  http://creativecommons.org/licenses/by-nc/2.0/deed.en
 
 import urllib,urllib2,re,os,sys
 import xbmcplugin,xbmcgui,xbmcaddon
-
+import resources.lib.common as common
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.nfl')
 home = __settings__.getAddonInfo('path')
@@ -82,6 +80,31 @@ def buccaneers():
         addDir('Buccaneers Insider',urlA+'Buccaneers%20Insider'+urlB+'Videos%3A%20Buccaneers%20Insider'+urlC,7,icon,fanart)
 
 
+def broncos():
+        fanart = 'http://farm7.static.flickr.com/6150/5982775071_b0ba46dc13_o.jpg'
+        icon = 'http://farm7.static.flickr.com/6150/5982775071_230da3cce1_m.jpg'
+        urlA = 'http://www.denverbroncos.com/cda-web/content-list-dynamic-module-paginated.htm?previewMode=false&displayName='
+        urlB = '&contentListType=internal&contentType=VIDEO&sortField=DATE&showRelatedToContent=Yes&relatedClubs=DEN&clubRelatedTerms='
+        urlC = '&relatedToId=&showImage=Yes&showDescription=Yes&showByline=Yes&showPublicationDate=Yes&showRSS=Yes&showContentType=No&showFilterType=month&showPagination=Yes&showPagerStatus=No&showCount=No&showTitleStyle=Yes&view=content-list-variation-2&month=&year=&numberPerPage=10&pageno=1'
+        names = 'Video%20-%20Broncos%20TV,Video%20-%20Press%20Conferences,Video%20-%20Locker%20Room,Video%20-%20Events,Video%20-%20NFL%20Network,Video%20-%20Community,Video%20-%20Cheerleaders'
+        n = names.split(',')
+        addDir('Most Recent',urlA+'Most%20Recent'+urlB+names+urlC,7,icon,fanart)
+        addDir('Broncos TV',urlA+n[0].replace('Videos%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
+        addDir('Press Conferences',urlA+n[1].replace('Videos%20-%20','')+urlB+n[1]+urlC,7,icon,fanart)
+        addDir('Locker Room',urlA+n[2].replace('Videos%20-%20','')+urlB+n[2]+urlC,7,icon,fanart)
+        addDir('Events',urlA+n[3].replace('Videos%20-%20','')+urlB+n[3]+urlC,7,icon,fanart)
+        addDir('NFL Network',urlA+n[4].replace('Videos%20-%20','')+urlB+n[4]+urlC,7,icon,fanart)
+        addDir('Community',urlA+n[5].replace('Videos%20-%20','')+urlB+n[5]+urlC,7,icon,fanart)
+        addDir('Cheerleaders',urlA+n[6].replace('Videos%20-%20','')+urlB+n[6]+urlC,7,icon,fanart)
+
+
+def bills():
+        icon = 'http://farm7.static.flickr.com/6138/5999411169_486330a2f4_m.jpg'
+        fanart = 'http://farm7.static.flickr.com/6138/5999411169_963d5c120a_o.jpg'
+        url = 'http://www.buffalobills.com/cda-web/content-list-dynamic-module-paginated.htm?previewMode=false&displayName=All%20Videos&numberOfResults=10000&sortField=DATE&contentType=VIDEO&clubRelatedTerms=Game%20Highlights,Fans%20Videos,Bills%20Focus,Bills%20Roundup,NFL%20Network,Press%20Conferences,History%20Videos,Thurman%20Thomas%20Show,Bills%20All%20Access&showImage=Yes&showDescription=Yes&showByline=Yes&showPublicationDate=Yes&showRSS=Yes&showContentType=Yes&showFilterType=month&showPagination=Yes&showPagerStatus=No&showCount=Yes&showTitleStyle=Yes&view=content-list-variation-2&month=&year=&numberPerPage=10&pageno=1'
+        common._index(url,fanart)
+
+
 def cardinals():
         fanart = 'http://farm7.static.flickr.com/6001/5984449229_3ef7ab5285_o.jpg'
         icon = 'http://farm7.static.flickr.com/6001/5984449229_fbed0e5147_m.jpg'
@@ -141,7 +164,7 @@ def chargers():
 
 def eagles():
         fanart = 'http://farm7.static.flickr.com/6140/5995277769_52906f9e5d_o.jpg'
-        icon = 'http://farm7.static.flickr.com/6140/5995277769_fd13323507_m.jpg'
+        'http://farm7.static.flickr.com/6140/5995277769_fd13323507_m.jpg'
         urlA = 'http://www.philadelphiaeagles.com/cda-web/content-list-dynamic-module-paginated.htm?previewMode=false&displayName='
         urlB = '&contentListType=internal&contentType=VIDEO&sortField=DATE&showRelatedToContent=Yes&relatedClubs=PHI&clubRelatedTerms='
         urlC = '&relatedToId=&showImage=Yes&showDescription=Yes&showByline=Yes&showPublicationDate=Yes&showRSS=Yes&showContentType=No&showFilterType=month&showPagination=Yes&showPagerStatus=No&showCount=No&showTitleStyle=Yes&view=content-list-variation-2&month=&year=&numberPerPage=10&pageno=1'
@@ -226,7 +249,7 @@ def jets():
         names = 'Video%20-%20Features%2FInterviews,Video%20-%20Press%20Conferences,Video%20-%20Gameday%20Highlights,Video%20-%20Historical,Video%20-%20Flight%20Crew,Video%20-%20In%20the%20Community,Video%20-%20New%20Stadium,Video%20-%20Generation%20Jets,Video%20-%20Four%20Quarters,Video%20-%20Draft%2FCombine'
         n = names.split(',')
         addDir('All Videos',urlA+'Most%20Recent%20(All)'+urlB+names+urlC,7,icon,fanart)
-        addDir('Features/Interviews',urlA+n[0].replace('Video%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
+        addDir('Features - Interviews',urlA+'Interviews%20%26%20Features'+urlB+n[0]+urlC,7,icon,fanart)
         addDir('Press Conferences',urlA+n[1].replace('Video%20-%20','')+urlB+n[1]+urlC,7,icon,fanart)
         addDir('Gameday Highlights',urlA+n[2].replace('Video%20-%20','')+urlB+n[2]+urlC,7,icon,fanart)
         addDir('Historical',urlA+n[3].replace('Video%20-%20','')+urlB+n[3]+urlC,7,icon,fanart)
@@ -354,7 +377,7 @@ def redskins():
         fanart = 'http://farm7.static.flickr.com/6148/5995833826_79a785014e_o.jpg'
         url = 'http://www.redskins.com/cda-web/content-list-dynamic-module-paginated.htm?previewMode=false&=undefined&contentListType=internal&contentType=VIDEO&sortField=DATE&showRelatedToContent=Yes&relatedClubs=WAS&clubRelatedTerms=Video%20-%20Comcast%20SportsNet,Video%20-%20Press%20Conferences,Video%20-%20Cheerleaders,Video%20-%20Health%20and%20Wellness,Video%20-%20News%20and%20Highlights,Video%20-%20NFL%20Films,Video%20-%20Player%20and%20Coach%20Profiles,Video%20-%20Post%20Game,Video%20-%20Redskins%20Park%20Action,Video%20-%20Redskins%20Rule,Video%20-%20En%20Espanol&relatedToId=&showImage=Yes&showDescription=Yes&showByline=Yes&showPublicationDate=Yes&showRSS=Yes&showContentType=Yes&showFilterType=No&showPagination=Yes&showPagerStatus=Yes&showCount=No&showTitleStyle=Yes&view=content-list-variation-2&month=&year=&numberPerPage=10&pageno=1'
         icon = 'http://farm7.static.flickr.com/6148/5995833826_2bb2981de1_m.jpg'
-        addDir('All Videos',url,7,icon,fanart)
+        common._index(url,fanart)
 
 
 def rams():
@@ -410,6 +433,28 @@ def saints():
         addDir('Path to the Draft',urlA+n[4].replace('Videos%20-%20','')+urlB+n[4]+urlC,7,icon,fanart)
         addDir('Youth Programs',urlA+n[5].replace('Videos%20-%20','')+urlB+n[5]+urlC,7,icon,fanart)
         addDir('Training Camp',urlA+n[6].replace('Videos%20-%20','')+urlB+n[6]+urlC,7,icon,fanart)
+
+
+def steelers():
+        fanart = 'http://farm7.static.flickr.com/6125/6008751079_2db71f18ef_o.jpg'
+        icon = 'http://farm7.static.flickr.com/6125/6008751079_ef6123e945_m.jpg'
+        urlA = 'http://www.steelers.com/cda-web/content-list-dynamic-module-paginated.htm?previewMode=false&displayName='
+        urlB = '&cssID=videos&contentListType=internal&sortField=DATE&contentType=VIDEO&showRelatedToContent=No&relatedClubs=PIT&clubRelatedTerms='
+        urlC = '&relatedToId=&showImage=Yes&showDescription=Yes&showByline=No&showPublicationDate=Yes&showViewCount=No&showRSS=Yes&showContentType=Yes&showFilterType=month&showPagination=Yes&showPagerStatus=Yes&showTitleStyle=Yes&view=content-list-variation-2&month=&year=&numberPerPage=10&pageno=1'
+        names = 'Video%20-%20News%20Conferences,Video%20-%20Draft,Video%20-%20Chalk%20Talk,Video%20-%201st%20and%2010,Video%20-%20Training%20Camp,Video%20-%20Gameday,Video%20-%20Features,Video%20-%20Shows,Video%20-%20Interviews,Video%20-%20Off%20the%20Field,Video%20-%20Lifestyle'
+        n = names.split(',')
+        addDir('Recent Videos',urlA+'Recent%20Videos'+urlB+names+urlC,7,icon,fanart)
+        addDir('News Conferences',urlA+n[0].replace('Videos%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
+        addDir('Draft',urlA+n[0].replace('Videos%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
+        addDir('Chalk Talk',urlA+n[0].replace('Videos%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
+        addDir('1st and 10',urlA+n[0].replace('Videos%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
+        addDir('Training Camp',urlA+n[0].replace('Videos%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
+        addDir('Gameday',urlA+n[0].replace('Videos%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
+        addDir('Features',urlA+n[0].replace('Videos%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
+        addDir('Shows',urlA+n[0].replace('Videos%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
+        addDir('Interviews',urlA+n[0].replace('Videos%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
+        addDir('Off the Field',urlA+n[0].replace('Videos%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
+        addDir('Lifestyle',urlA+n[0].replace('Videos%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
 
 
 def texans():

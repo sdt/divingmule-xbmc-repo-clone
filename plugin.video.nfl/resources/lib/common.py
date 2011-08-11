@@ -34,7 +34,10 @@ def _index(url,fanart):
                     desc = video('span')[-1].string
                 except:
                     desc =''
-            addLink(title+' - '+desc,url.split('cda')[0]+'cda-web/audio-video-module.htm?dataMode=singleMediaContent&id='+link,thumb,duration,8,fanart)
+            try:        
+                addLink(title+' - '+desc,url.split('cda')[0]+'cda-web/audio-video-module.htm?dataMode=singleMediaContent&id='+link,thumb,duration,8,fanart)
+            except:
+                pass
         page = int(url[-1])
         url = url[:-1]+str(page+1)
         addDir('Next Page',url,7,next,fanart)

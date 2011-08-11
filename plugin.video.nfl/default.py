@@ -7,6 +7,10 @@ except:
     import simplejson as json
 import resources.lib.common as common
 import resources.lib.dallas as dallas
+import resources.lib.ravens as ravens
+import resources.lib.colts as colts
+import resources.lib.bears as bears
+import resources.lib.jaguars as jaguars
 import resources.lib.teams as teams
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.nfl')
@@ -14,10 +18,6 @@ __language__ = __settings__.getLocalizedString
 home = __settings__.getAddonInfo('path')
 cdn = __settings__.getSetting('cdn')
 bitrate = __settings__.getSetting('bitrate')
-
-print 'bitrate----> '+bitrate
-print 'cdn-------> '+cdn
-
 icon = xbmc.translatePath( os.path.join( home, 'icon.png' ) )
 next = xbmc.translatePath( os.path.join( home, 'resources','icons','next.png' ) )
 fanart = xbmc.translatePath( os.path.join( home, 'fanart.jpg' ) )
@@ -35,15 +35,21 @@ def categories():
 
 def teamSite():
         addDir('Az Cardinals.com','',9,'http://farm7.static.flickr.com/6001/5984449229_fbed0e5147_m.jpg')
+        addDir('Baltimore Ravens.com','',35,'http://farm7.static.flickr.com/6121/6009301002_16eaf2f9b4_m.jpg')
         addDir('Bengals.com','',10,'http://farm7.static.flickr.com/6011/6009300352_4f1f19b3bc_m.jpg')
         addDir('Buccaneers.com','',11,'http://farm7.static.flickr.com/6130/6009473824_9015669a7c_m.jpg')
+        addDir('Buffalo Bills.com','',48,'http://farm7.static.flickr.com/6138/5999411169_486330a2f4_m.jpg')
         addDir('Cleveland Browns.com','',12,'http://farm7.static.flickr.com/6127/6009299438_1f1dd2bec7_m.jpg')
         addDir('Chargers.com','',13,'http://farm7.static.flickr.com/6022/5983336472_98c373d130_m.jpg')
+        addDir('Chicago Bears.com','',40,'http://farm7.static.flickr.com/6021/5987940049_a057f154d0_m.jpg')
+        addDir('Colts.com','',37,'http://farm7.static.flickr.com/6014/5994129657_d872d7f4c5_m.jpg')
         addDir('Dallas Cowboys.com','',15,'http://farm7.static.flickr.com/6021/5995834962_78ff72f058_m.jpg')
+        addDir('Denver Broncos.com','',43,'http://farm7.static.flickr.com/6150/5982775071_230da3cce1_m.jpg')
         addDir('Detroit Lions.com','',18,'http://farm7.static.flickr.com/6008/5988506040_a546c4983b_m.jpg')
         addDir('49ers.com','',19,'http://farm7.static.flickr.com/6140/5985014424_c9817f5c82_m.jpg')
         addDir('Giants.com','',20,'http://farm7.static.flickr.com/6123/5995276331_5b335c77de_m.jpg')
         addDir('Houston Texans.com','',21,'http://farm7.static.flickr.com/6010/5994131823_c86dca0c96_m.jpg')
+        addDir('Jaguars.com','',45,'http://farm7.static.flickr.com/6007/5994132885_27f73cafed_m.jpg')
         addDir('KC Chiefs.com','',22,'http://farm7.static.flickr.com/6135/5982773393_53a393e5e1_m.jpg')
         addDir('New York Jets.com','',23,'http://farm7.static.flickr.com/6127/5999958596_84ff270f61_m.jpg')
         addDir('New Orleans Saints.com','',24,'http://farm7.static.flickr.com/6125/6008924973_75bf096d30_m.jpg')
@@ -55,9 +61,10 @@ def teamSite():
         addDir('Redskins.com.com','',30,'http://farm7.static.flickr.com/6148/5995833826_2bb2981de1_m.jpg')
         addDir("Seahawks.com",'',31,'http://farm7.static.flickr.com/6002/5984451637_4f7bb3b46f_m.jpg')
         addDir('St Louis Rams.com','',32,'http://farm7.static.flickr.com/6012/5985015330_814587c665_m.jpg')
+        addDir('Steelers.com','',44,'http://farm7.static.flickr.com/6125/6008751079_ef6123e945_m.jpg')
         addDir('Titans Online.com','',33,'http://farm7.static.flickr.com/6014/5994130863_839e1e630b_m.jpg')
         addDir('Vikings.com','',34,'http://farm7.static.flickr.com/6016/5988505154_0749939588_m.jpg')
-        
+
 
 def getSubCategories(name):
         req = urllib2.Request('http://www.nfl.com/videos/')
@@ -152,8 +159,8 @@ def getFeaturedVideos(url):
             info = xbmcgui.ListItem(name)
             playlist.add(url, info)
         play=xbmc.Player().play(playlist)
-        
-        
+
+
 def search():
         searchStr = ''
         keyboard = xbmc.Keyboard(searchStr,'Search')
@@ -193,8 +200,6 @@ def getVideoUrl(url):
         link=response.read()
         response.close()
         data = json.loads(link)
-        print data
-
         if bitrate == "3200k":
             try:
                 url = data['cdnData']['bitrateInfo'][4]['path']
@@ -427,11 +432,11 @@ elif mode==18:
 elif mode==19:
         print ""
         teams.fortyniners()
-        
+
 elif mode==20:
         print ""
         teams.giants()
-        
+
 elif mode==21:
         print ""
         teams.texans()
@@ -479,7 +484,7 @@ elif mode==31:
 elif mode==32:
         print ""
         teams.rams()
-        
+
 elif mode==33:
         print ""
         teams.titans()
@@ -487,5 +492,61 @@ elif mode==33:
 elif mode==34:
         print ""
         teams.vikings()
+
+elif mode==35:
+        print ""
+        ravens._categories()
+
+elif mode==36:
+        print ""
+        ravens._index(url)
+
+elif mode==37:
+        print ""
+        colts._categories()
+
+elif mode==38:
+        print ""
+        colts._index(url,name)
+
+elif mode==39:
+        print ""
+        colts._getVideoUrl(url)
+
+elif mode==40:
+        print ""
+        bears._categories()
+
+elif mode==41:
+        print ""
+        bears._index(url)
+
+elif mode==42:
+        print ""
+        bears._getVideoUrl(url)
+
+elif mode==43:
+        print ""
+        teams.broncos()
+
+elif mode==44:
+        print ""
+        teams.steelers()
+
+elif mode==45:
+        print ""
+        jaguars._categories()
+
+elif mode==46:
+        print ""
+        jaguars._index(url)
+
+elif mode==47:
+        print ""
+        jaguars._getVideoUrl(url)
+
+elif mode==48:
+        print ""
+        teams.bills()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
