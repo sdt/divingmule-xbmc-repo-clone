@@ -8,7 +8,6 @@ except:
 import resources.lib.common as common
 import resources.lib.dallas as dallas
 import resources.lib.ravens as ravens
-import resources.lib.colts as colts
 import resources.lib.bears as bears
 import resources.lib.jaguars as jaguars
 import resources.lib.teams as teams
@@ -43,7 +42,7 @@ def teamSite():
         addDir('Chargers.com','',13,'http://farm7.static.flickr.com/6022/5983336472_98c373d130_m.jpg')
         addDir('Chicago Bears.com','',40,'http://farm7.static.flickr.com/6021/5987940049_a057f154d0_m.jpg')
         addDir('Colts.com','',37,'http://farm7.static.flickr.com/6014/5994129657_d872d7f4c5_m.jpg')
-        addDir('Dallas Cowboys.com','',15,'http://farm7.static.flickr.com/6021/5995834962_78ff72f058_m.jpg')
+        addDir('Dallas Cowboys.com','',15,'http://farm7.static.flickr.com/6021/5995834962_9e0a38569b_m.jpg')
         addDir('Denver Broncos.com','',43,'http://farm7.static.flickr.com/6150/5982775071_230da3cce1_m.jpg')
         addDir('Detroit Lions.com','',18,'http://farm7.static.flickr.com/6008/5988506040_a546c4983b_m.jpg')
         addDir('49ers.com','',19,'http://farm7.static.flickr.com/6140/5985014424_c9817f5c82_m.jpg')
@@ -503,15 +502,15 @@ elif mode==36:
 
 elif mode==37:
         print ""
-        colts._categories()
+        teams.colts()
 
 elif mode==38:
         print ""
-        colts._index(url,name)
+        
 
 elif mode==39:
         print ""
-        colts._getVideoUrl(url)
+        
 
 elif mode==40:
         print ""

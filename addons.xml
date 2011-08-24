@@ -134,7 +134,7 @@
 
 <addon id="plugin.video.nfl"
        name="NFL.com"
-       version="0.0.2"
+       version="0.0.3"
        provider-name="divingmule">
   <requires>
     <import addon="xbmc.python" version="1.0"/>

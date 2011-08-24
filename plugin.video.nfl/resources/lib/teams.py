@@ -161,6 +161,32 @@ def chargers():
         addDir('USA Football',urlA+n[5].replace('Videos%20-%20','')+urlB+n[5]+urlC,7,icon,fanart)
 
 
+def colts():
+        icon = 'http://farm7.static.flickr.com/6014/5994129657_d872d7f4c5_m.jpg'
+        fanart = 'http://farm7.static.flickr.com/6014/5994129657_ae086fa8c3_o.jpg'
+        urlA = 'http://www.colts.com/cda-web/content-list-dynamic-module-paginated.htm?previewMode=false&displayName='
+        urlB = '&contentListType=internal&sortField=DATE&contentType=VIDEO&showRelatedToContent=No&clubRelatedTerms='
+        urlC = '&relatedToId=&showImage=Yes&showDescription=Yes&showByline=No&showPublicationDate=Yes&showViewCount=No&showRSS=Yes&showContentType=Yes&showFilterType=month&showPagination=Yes&showPagerStatus=Yes&showTitleStyle=Yes&view=content-list-variation-2&month=&year=&numberPerPage=10&pageno=1'
+        names = 'Video%20-%20Press%20Conference,Video%20-%20Gameday,Video%20-%20Sounds%20of%20the%20Game,Video%20-%20Up%20Close%20Online,Video%20-%20NFL%20Network,Video%20-%20Cheerleaders,Video%20-%20Community,Video%20-%20Football,Video%20-%20Blue,Video%20-%20Features,Video%20-%20Post%20Game%20Coach%20Comments,Video%20-%20Post%20Game%20Locker%20Room,Video%20-%20Pre-Game%20Report,Video%20-%20Preps%20Pro%20Combine,Video%20-%20NFL%20Draft'
+        n = names.split(',')
+        addDir('All Videos',urlA+'All%20Videos'+urlB+names+urlC,7,icon,fanart)
+        addDir('Press Conference',urlA+n[0].replace('Videos%20-%20','')+urlB+n[0]+urlC,7,icon,fanart)
+        addDir('Gameday',urlA+n[1].replace('Videos%20-%20','')+urlB+n[1]+urlC,7,icon,fanart)
+        addDir('Sounds of the Game',urlA+n[2].replace('Videos%20-%20','')+urlB+n[2]+urlC,7,icon,fanart)
+        addDir('Up Close Online',urlA+n[3].replace('Videos%20-%20','')+urlB+n[3]+urlC,7,icon,fanart)
+        addDir('NFL Network',urlA+n[4].replace('Videos%20-%20','')+urlB+n[4]+urlC,7,icon,fanart)
+        addDir('Cheerleaders',urlA+n[5].replace('Videos%20-%20','')+urlB+n[5]+urlC,7,icon,fanart)
+        addDir('Community',urlA+n[6].replace('Videos%20-%20','')+urlB+n[6]+urlC,7,icon,fanart)
+        addDir('Football',urlA+n[7].replace('Videos%20-%20','')+urlB+n[7]+urlC,7,icon,fanart)
+        addDir('Blue',urlA+n[8].replace('Videos%20-%20','')+urlB+n[8]+urlC,7,icon,fanart)
+        addDir('Features',urlA+n[9].replace('Videos%20-%20','')+urlB+n[9]+urlC,7,icon,fanart)
+        addDir('Post Game Coach Comments',urlA+n[10].replace('Videos%20-%20','')+urlB+n[10]+urlC,7,icon,fanart)
+        addDir('Post Game Locker Room',urlA+n[11].replace('Videos%20-%20','')+urlB+n[11]+urlC,7,icon,fanart)
+        addDir('Pre-Game Report',urlA+n[12].replace('Videos%20-%20','')+urlB+n[12]+urlC,7,icon,fanart)
+        addDir('Preps Pro Combine',urlA+n[13].replace('Videos%20-%20','')+urlB+n[13]+urlC,7,icon,fanart)
+        addDir('NFL Draft',urlA+n[14].replace('Videos%20-%20','')+urlB+n[14]+urlC,7,icon,fanart)
+
+        
 def eagles():
         fanart = 'http://farm7.static.flickr.com/6140/5995277769_52906f9e5d_o.jpg'
         icon = 'http://farm7.static.flickr.com/6140/5995277769_fd13323507_m.jpg'

@@ -4,8 +4,8 @@ from BeautifulSoup import BeautifulSoup
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.nfl')
 home = __settings__.getAddonInfo('path')
-fanart = 'http://farm7.static.flickr.com/6021/5995834962_f0ed81dfd4_o.jpg'
-icon = 'http://farm7.static.flickr.com/6021/5995834962_78ff72f058_m.jpg'
+fanart = 'http://farm7.static.flickr.com/6021/5995834962_cf405ccc62_o.jpg'
+icon = 'http://farm7.static.flickr.com/6021/5995834962_9e0a38569b_m.jpg'
 base_url = 'http://www.dallascowboys.com/multimedia/multimedia_archives.cfm?'
 
 def _categories():
