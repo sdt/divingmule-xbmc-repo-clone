@@ -13,9 +13,11 @@ icon = xbmc.translatePath( os.path.join( home, 'icon.png' ) )
 fanart = xbmc.translatePath( os.path.join( home, 'fanart.jpg' ) )
 fanart1 = xbmc.translatePath( os.path.join( home, 'resources/fanart1.jpg' ) )
 
+headers = {'User-agent' : 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0',
+           'Referer' : 'http://www.pgatour.com'}
 
 def categories():
-        addDir('Play Latest','',6,icon)
+        addPlaylist('Play Latest','',6,icon)
         addDir('Highlights','',1,icon)
         addDir('Features','',2,icon)
         addDir('shows','',3,icon)
@@ -64,9 +66,7 @@ def instruction():
 
 def playLatest():
         url='http://www.pgatour.com/video/'
-        req = urllib2.Request(url)
-        req.addheaders = [('Referer', 'http://www.pgatour.com'),
-            ('Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3')]
+        req = urllib2.Request(url,None,headers)
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
@@ -85,9 +85,7 @@ def playLatest():
             
 
 def getVideos(url):
-        req = urllib2.Request(url)
-        req.addheaders = [('Referer', 'http://www.pgatour.com'),
-                          ('Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0) Gecko/20100101 Firefox/4.0')]
+        req = urllib2.Request(url,None,headers)
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
@@ -146,6 +144,16 @@ def addDir(name,url,mode,iconimage):
         liz.setProperty( "Fanart_Image", fanart )
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         return ok
+
+
+def addPlaylist(name,url,mode,iconimage):
+        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
+        ok=True
+        liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+        liz.setInfo( type="Video", infoLabels={ "Title": name } )
+        liz.setProperty( "Fanart_Image", fanart )
+        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
+        return ok        
         
               
 params=get_params()
