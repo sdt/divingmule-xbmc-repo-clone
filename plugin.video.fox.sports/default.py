@@ -1,6 +1,7 @@
 import urllib,urllib2,re,os
 import xbmcplugin,xbmcgui,xbmcaddon
 from BeautifulSoup import BeautifulStoneSoup
+from resources import foxSportSouth as fss
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.fox.sports')
 home = __settings__.getAddonInfo('path')
@@ -9,6 +10,7 @@ fanart = xbmc.translatePath( os.path.join( home, 'fanart.jpg' ) )
 
 
 def Categories():
+        addDir('Fox SportSouth','',icon,4)
         addDir('Shows','',icon,3)
         addDir('Featured Videos','http://edge1.catalog.video.msn.com/videoByTag.aspx?ff=8a&ind=1&mk=us&ns=Fox%20Sports_Gallery&ps=100&rct=1,3&tag=top%20news&vs=0&responseEncoding=xml&template=foxsports&p=gallery_en-us_foxsports__featuredvideo',icon,1)
         addDir('all video','http://edge4.catalog.video.msn.com/videoByTag.aspx?ff=8a&ind=1&mk=us&ns=VC_Supplier&ps=100&rct=1,3&sd=-1&sf=ActiveStartDate&st=1&tag=Fox%20Sports&vs=0&responseEncoding=xml&template=foxsports&p=gallery_en-us_foxsports_video_channel_gallery',icon,1)
@@ -53,14 +55,22 @@ def Shows():
         addDir('Coach Speak','http://edge2.catalog.video.msn.com/videoByTag.aspx?ff=8a&ind=1&mk=us&ns=Fox%20Sports_Gallery&ps=100&rct=1,3&tag=coachspeak&vs=0&responseEncoding=xml&template=foxsports&p=gallery_en-us_foxsports_videosgallery','http://static.foxsports.com/content/fscom/img/2010/09/15/_730_20100915154744_111_53.JPG',1)
 
 def getVideos(url):
-        req = urllib2.Request(url)
-        req.addheaders = [('Referer', 'http://img.widgets.video.s-msn.com/v/4417.00/fl/player/current/player.swf'),
-                                  ('Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1')]
+        headers = {'User-agent' : 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0',
+                   'Referer' : 'http://img.widgets.video.s-msn.com/v/4417.00/fl/player/current/player.swf'}
+        req = urllib2.Request(url,None,headers)
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
         soup = BeautifulStoneSoup(link, convertEntities = BeautifulStoneSoup.XML_ENTITIES)
         videos = soup('videos')[0]('video')
+        # for i in soup('videofile'):
+            # try:
+                # bitrate = i['bitrate']
+                # formatcode = i['formatcode']
+                # url = i.uri
+            # except:
+                # pass
+            # print (formatcode, bitrate, url)
         for video in videos:
             name  = video('title')[0].string
             try:
@@ -152,4 +162,16 @@ if mode==3:
     print""
     Shows()    
 
+if mode==4:
+    print""
+    fss.Categories()
+
+if mode==5:
+    print""
+    fss.Index(name)
+
+if mode==6:
+    print""
+    fss.setVideoUrl(url) 
+    
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
