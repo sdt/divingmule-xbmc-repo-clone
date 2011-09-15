@@ -170,6 +170,24 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.steam"
+       name="Steam"
+       version="0.0.0"
+       provider-name="divingmule">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Game videos from Steam</summary>
+    <description>Videos from SteamPowered.com</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="plugin.video.weather.channel"
        name="The Weather Channel"
        version="0.0.2"
