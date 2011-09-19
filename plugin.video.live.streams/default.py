@@ -37,7 +37,7 @@ def getSoup():
         files = soup('ul')[0]('li')[1:]
         for i in files:
             name = i('a')[0]['href']
-            url = 'http://community-links.googlecode.com/svn/trunk/'+name 
+            url = 'http://community-links.googlecode.com/svn/trunk/'+name
             req = urllib2.Request(url)
             response = urllib2.urlopen(req)
             link=response.read()
@@ -48,7 +48,7 @@ def getSoup():
                 f.write(link)
                 f.close()
             except:
-                print "there was a problem writing to save location." 
+                print "there was a problem writing to save location."
         req = urllib2.Request('http://community-links.googlecode.com/svn/trunk/')
         response = urllib2.urlopen(req)
         link=response.read()
@@ -59,6 +59,7 @@ def getSoup():
             R.close()
         except:
             print "there was a problem writing REV to profile."
+
 
 def checkForUpdate():
         url = 'http://community-links.googlecode.com/svn/trunk/'
@@ -81,10 +82,11 @@ def checkForUpdate():
         except:
             getSoup()
             pass
-        
+
 
 if __settings__.getSetting('community_list') == "true":
         checkForUpdate()
+
 
 def getStreams():
         if __settings__.getSetting('community_list') == "true":
@@ -97,16 +99,20 @@ def getStreams():
             link=response.read()
             soup = BeautifulStoneSoup(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
         elif __settings__.getSetting('get_xml') != "":
-            soup = BeautifulStoneSoup(file, convertEntities=BeautifulStoneSoup.XML_ENTITIES)        
+            soup = BeautifulStoneSoup(file, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
         if len(soup('channels')) > 0:
                 channels = soup('channel')
                 for channel in channels:
                         name = channel('name')[0].string
                         thumbnail = channel('thumbnail')[0].string
                         url = ''
-                        addDir(name,url,2,thumbnail)
+                        try:
+                                addDir(name,url,2,thumbnail)
+                        except:
+                                pass
         else:
                 INDEX()
+
 
 def getChannels(url):
         if __settings__.getSetting('community_list') == "true":
@@ -119,10 +125,14 @@ def getChannels(url):
         for channel in channels:
                 name = channel('name')[0].string
                 thumbnail = channel('thumbnail')[0].string
-                addDir(name,'',2,thumbnail)
+                try:
+                        addDir(name,'',2,thumbnail)
+                except:
+                        pass
         else:
-                INDEX()        
-                        
+                INDEX()
+
+
 def getChannelItems(name):
         if __settings__.getSetting('community_list') == "true":
             response = open(file, 'rb')
@@ -130,19 +140,22 @@ def getChannelItems(name):
             soup = BeautifulSOAP(link, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
         else:
             soup = BeautifulSOAP(file, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
-            
+
         channel_list = soup.find('channel', attrs={'name' : name})
         items = channel_list('item')
         for channel in channel_list('subchannel'):
                 name = channel('name')[0].string
                 thumb = channel('thumbnail')[0].string
-                addDir(name,'',3,thumb)
+                try:
+                        addDir(name,'',3,thumb)
+                except:
+                        pass
         for item in items:
                 try:
                         name = item('title')[0].string
                 except:
                         pass
-                     
+
                 try:
                         if __settings__.getSetting('mirror_link') == "true":
                                 try:
@@ -161,12 +174,16 @@ def getChannelItems(name):
                                 url = item('link')[0].string
                 except:
                         pass
-                        
+
                 try:
                         thumbnail = item('thumbnail')[0].string
                 except:
                         thumbnail = ''
-                addLink(url,name,thumbnail)
+                try:
+                        addLink(url,name,thumbnail)
+                except:
+                        pass
+
 
 def getSubChannelItems(name):
         if __settings__.getSetting('community_list') == "true":
@@ -182,7 +199,7 @@ def getSubChannelItems(name):
                         name = item('title')[0].string
                 except:
                         pass
-                     
+
                 try:
                         if __settings__.getSetting('mirror_link') == "true":
                                 try:
@@ -201,12 +218,15 @@ def getSubChannelItems(name):
                                 url = item('link')[0].string
                 except:
                         pass
-                        
+
                 try:
                         thumbnail = item('thumbnail')[0].string
                 except:
                         thumbnail = ''
-                addLink(url,name,thumbnail)               
+                try:
+                        addLink(url,name,thumbnail)
+                except:
+                        pass
 
 
 def INDEX():
@@ -244,9 +264,11 @@ def INDEX():
                 try:
                         thumbnail = item('thumbnail')[0].string
                 except:
-                        thumbnail = ''       
-                addLink(url,name,thumbnail)
-	
+                        thumbnail = ''
+                try:
+                        addLink(url,name,thumbnail)
+                except:
+                        pass	
 
 
 def get_params():
@@ -264,7 +286,7 @@ def get_params():
                         splitparams=pairsofparams[i].split('=')
                         if (len(splitparams))==2:
                                 param[splitparams[0]]=splitparams[1]
-                                
+
         return param
 
 
@@ -285,7 +307,7 @@ def addLink(url,name,iconimage):
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
         return ok
 
-            
+
 params=get_params()
 url=None
 name=None
@@ -323,5 +345,5 @@ elif mode==2:
 elif mode==3:
         print ""+url
         getSubChannelItems(name)
-        
+
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
