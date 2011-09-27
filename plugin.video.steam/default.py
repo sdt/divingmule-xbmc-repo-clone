@@ -29,7 +29,7 @@ def Index(url):
             vidUrl = video('a')[0]['href']
             Id = vidUrl.split('?')[0].split('/')[-1]
             thumb = 'http://cdn.steampowered.com/v/gfx/apps/'+Id+'/movie.184x123.jpg'
-            addDir(name,vidUrl,2,thumb)
+            addDir(name.encode("ascii", "ignore") ,vidUrl,2,thumb)
         try:
             page = soup.find('div', attrs={'id' : "tab_NewVideos_next"}).a['href']
             navcontext = 'navcontext='+page.split('{')[1].split(':')[-1].split('"')[1]
@@ -52,7 +52,7 @@ def mostWatched():
             name = video('a')[1].string
             url = video('a')[1]['href']
             thumb = video('img')[0]['src']
-            addDir(name,url,2,thumb)
+            addDir(name.encode("ascii", "ignore") ,url,2,thumb)
 
 
 def getVideos(url):
@@ -73,7 +73,7 @@ def getVideos(url):
         match = re.compile("javascript:showGotSteamModal\('gotSteamModal', '(.+?)', '(.+?)'\)").findall(link)
         for vidId,name in match:
             vidId = vidId.split('/')[-1]
-            name = name.replace('&quot;','"')
+            name = name.replace('&quot;','"').decode("utf-8")
             thumb = 'http://cdn.steampowered.com/v/gfx/apps/'+vidId+'/movie.184x123.jpg'
             url = 'http://cdn.steampowered.com/v/gfx/apps/'+vidId+'/movie940.flv'
             addLink(name,url,thumb)
