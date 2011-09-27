@@ -172,7 +172,7 @@
 
 <addon id="plugin.video.steam"
        name="Steam"
-       version="0.0.0"
+       version="0.0.1"
        provider-name="divingmule">
   <requires>
     <import addon="xbmc.python" version="1.0"/>
