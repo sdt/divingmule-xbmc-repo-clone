@@ -1,7 +1,7 @@
 import urllib,urllib2,re,os
 import xbmcplugin,xbmcgui,xbmcaddon
 from BeautifulSoup import BeautifulStoneSoup
-from resources import foxSportSouth as fss
+#from resources import foxSportSouth as fss
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.fox.sports')
 home = __settings__.getAddonInfo('path')
@@ -10,7 +10,7 @@ fanart = xbmc.translatePath( os.path.join( home, 'fanart.jpg' ) )
 
 
 def Categories():
-        addDir('Fox SportSouth','',icon,4)
+        #addDir('Fox SportSouth','',icon,4)
         addDir('Shows','',icon,3)
         addDir('Featured Videos','http://edge1.catalog.video.msn.com/videoByTag.aspx?ff=8a&ind=1&mk=us&ns=Fox%20Sports_Gallery&ps=100&rct=1,3&tag=top%20news&vs=0&responseEncoding=xml&template=foxsports&p=gallery_en-us_foxsports__featuredvideo',icon,1)
         addDir('all video','http://edge4.catalog.video.msn.com/videoByTag.aspx?ff=8a&ind=1&mk=us&ns=VC_Supplier&ps=100&rct=1,3&sd=-1&sf=ActiveStartDate&st=1&tag=Fox%20Sports&vs=0&responseEncoding=xml&template=foxsports&p=gallery_en-us_foxsports_video_channel_gallery',icon,1)
@@ -63,14 +63,7 @@ def getVideos(url):
         response.close()
         soup = BeautifulStoneSoup(link, convertEntities = BeautifulStoneSoup.XML_ENTITIES)
         videos = soup('videos')[0]('video')
-        # for i in soup('videofile'):
-            # try:
-                # bitrate = i['bitrate']
-                # formatcode = i['formatcode']
-                # url = i.uri
-            # except:
-                # pass
-            # print (formatcode, bitrate, url)
+
         for video in videos:
             name  = video('title')[0].string
             try:
@@ -80,7 +73,10 @@ def getVideos(url):
             desc = video('description')[0].string
             date = video('startdate')[0].string.split('T')[0]
             description = desc+'\n'+date
-            duration = video('durationsecs')[0].string
+            try:
+                duration = video('durationsecs')[0].string
+            except:
+                duration = ''
             try:
                 thumb = video('file', attrs={'formatcode' : "2009"})[0]('uri')[0].string
             except:
