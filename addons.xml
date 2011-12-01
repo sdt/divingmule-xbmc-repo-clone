@@ -38,7 +38,7 @@
 
 <addon id="plugin.video.atk"
        name="Americas Test Kitchen"
-       version="0.0.0"
+       version="0.0.1"
        provider-name="divingmule">
   <requires>
     <import addon="xbmc.python" version="1.0"/>
@@ -57,7 +57,7 @@
 
 <addon id="plugin.video.espn.go"
        name="ESPN Go"
-       version="0.0.0"
+       version="0.0.1"
        provider-name="divingmule">
   <requires>
     <import addon="xbmc.python" version="1.0"/>
