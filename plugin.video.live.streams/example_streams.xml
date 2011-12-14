@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <items>
+
+    <item>
+        <title>POKER CHANNEL</title>
+        <link>mms://91.193.244.244/pokerchannel</link>
+        <thumbnail>http://www.lyngsat-logo.com/hires/pp/poker_channel.png?__SQUARESPACE_CACHEVERSION=12808 35516186</thumbnail>
+        <genre>Poker</genre>
+        <info>The Poker Channel – Europe’s largest dedicated gaming TV network is available online to a global audience, and to more than 30 million cable and satellite homes in Europe and Latin America.</info>
+        <date>07.12.2011</date>  <!-- format - dd.mm.yyyy -->
+        <epg></epg>  <!-- See daschacka's post - http://forum.xbmc.org/showpost.php?p=936228&postcount=1076 -->
+        <fanart>http://www.lyngsat-logo.com/hires/pp/poker_channel.png?__SQUARESPACE_CACHEVERSION=12808 35516186</fanart>
+    </item>
     
 	<item>
         <title>NHK - World</title>         
