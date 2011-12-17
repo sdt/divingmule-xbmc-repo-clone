@@ -95,7 +95,7 @@
 
 <addon id="plugin.video.live.streams"
        name="LiveStreams"
-       version="0.1.5"
+       version="0.1.6"
        provider-name="divingmule">
   <requires>
     <import addon="xbmc.python" version="1.0"/>

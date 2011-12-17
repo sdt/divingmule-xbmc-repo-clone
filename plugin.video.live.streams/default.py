@@ -452,7 +452,7 @@ def addDir(name,url,mode,iconimage,fanart,description,genre,date,showcontext=Tru
             try:
                 if name in SOURCES:
                     contextMenu = [('Remove from Sources','XBMC.Container.Update(%s?mode=8&name=%s)' %(sys.argv[0], urllib.quote_plus(name)))]
-                    liz.addContextMenuItems(contextMenu)
+                    liz.addContextMenuItems(contextMenu, True)
             except:
                 pass
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
@@ -592,12 +592,10 @@ elif mode==6:
 elif mode==7:
     print "addSource"
     addSource(url)
-    getSources()
 
 elif mode==8:
     print "rmSource"
     rmSource(name)
-    getSources()
 
 elif mode==9:
     print "getUpdate"

@@ -1,3 +1,6 @@
+version 0.1.6
+fix for add sources
+
 version 0.1.5
 Now we add xml files and URLs as sources. If more than one source is added we add each as a directory.
 Added support for <fanart> tag. You can add <fanart> for <channel><subchannel><item><subitem>. If <channel> and or <subchannel> has <fanart>, <fanart> is passed to <item> and <subitem> if <item><subitem> doesn't have <fanart>.
