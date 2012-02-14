@@ -39,7 +39,7 @@
 
 <addon id="plugin.video.atk"
        name="Americas Test Kitchen"
-       version="0.0.1"
+       version="0.0.2"
        provider-name="divingmule">
   <requires>
     <import addon="xbmc.python" version="1.0"/>

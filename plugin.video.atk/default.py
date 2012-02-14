@@ -5,14 +5,17 @@ import os
 import xbmcplugin
 import xbmcgui
 import xbmcaddon
+from BeautifulSoup import BeautifulSoup
 
 __settings__ = xbmcaddon.Addon(id='plugin.video.atk')
 __language__ = __settings__.getLocalizedString
 home = __settings__.getAddonInfo('path')
 icon = xbmc.translatePath( os.path.join( home, 'icon.png' ) )
+cicon = 'http://media.cookscountry.com/images/layout/banner_CCO.png'
 fanart = xbmc.translatePath( os.path.join( home, 'fanart.jpg' ) )
 
 def categories():
+        addDir('Cooks Country','http://www.cookscountry.com/videos/browse/?v=gl&video=episode',2,cicon)
         base_url = 'http://www.americastestkitchen.com/video/index.php?document_activeCategoryName_2_10_0_mv='
         addDir('Most Recent','http://www.americastestkitchen.com/video',1,icon)
         addDir('Season 11',base_url+'episode&document_season_i=11',1,icon)
@@ -51,6 +54,64 @@ def index(url):
         page = re.compile('<a href="(.+?)">Next</a>').findall(link)
         if len(page) > 0:
             addDir('Next Page','http://www.americastestkitchen.com/video/index.php'+page[0],1,xbmc.translatePath( os.path.join( home, 'resources', 'next.png' ) ))
+            
+            
+def getCooks(url):
+        headers = {'User-agent' : 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0',
+                   'Referer' : 'http://www.cookscountry.com'}
+        req = urllib2.Request(url,None,headers)
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        soup = BeautifulSoup(link)
+        items = soup('div', attrs={'class' : "category_nav video_nav"})[0]('a')[1:]
+        for i in items:
+            name = i.string
+            url = 'http://www.cookscountry.com'+i['href']
+            addDir(name, url, 3, cicon)
+            
+            
+def indexCooks(url):
+        headers = {'User-agent' : 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0',
+                   'Referer' : 'http://www.cookscountry.com/videos/browse/'}
+        req = urllib2.Request(url,None,headers)
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        soup = BeautifulSoup(link)
+        items = soup('div', attrs={'class' : "gallery_list"})[0]('div')
+        for i in items:
+            try:
+                name = i.h2.a.string
+                url = 'http://www.cookscountry.com'+i.a['href']
+                thumb = i.img['src'].split('?')[0]
+                addLink(name, url, thumb, True)
+            except:
+                continue
+
+        try:
+            next_page = soup('li', attrs={'class' : "next"})[0].a['href']
+            addDir('Next Page', 'http://www.cookscountry.com/videos/browse/'+next_page, 3, xbmc.translatePath( os.path.join( home, 'resources', 'next.png' ) ))
+        except: pass
+        
+        
+def setUrl(url):
+        headers = {'User-agent' : 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:6.0) Gecko/20100101 Firefox/6.0',
+                   'Referer' : 'http://www.cookscountry.com/videos/browse/'}
+        req = urllib2.Request(url,None,headers)
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        soup = BeautifulSoup(link)
+        episode = soup('div', attrs={'id' : "player"})[0].a['href']
+        tcUrl = 'rtmp://wowza.americastestkitchen.com/vods3'
+        swf = ' swfUrl=http://www.cookscountry.com/media/swf/flowplayer/flowplayer.commercial-3.2.7-4.swf '
+        pageUrl = 'Pageurl='+url
+        playpath = ' Playpath=mp4:amazons3/atk-private/video/'+episode+'-1000.mp4'
+        final_url = tcUrl+swf+pageUrl+playpath
+        item = xbmcgui.ListItem(path=final_url)
+        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+
 
 def get_params():
         param=[]
@@ -70,17 +131,22 @@ def get_params():
         return param
 
 
-def addLink(name,url,iconimage):
+def addLink(name,url,iconimage,seturl=False):
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name } )
         liz.setProperty( "Fanart_Image", fanart )
-        ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
+        if seturl:
+            liz.setProperty('IsPlayable', 'true')
+            u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode=4&name="+urllib.quote_plus(name)
+            ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz)
+        else:
+            ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=url,listitem=liz)
         return ok
 
 
 def addDir(name,url,mode,iconimage):
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="
+        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
         ok=True
         liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
         liz.setInfo( type="Video", infoLabels={ "Title": name } )
@@ -118,5 +184,17 @@ if mode==None or url==None or len(url)<1:
 elif mode==1:
     print ""
     index(url)
+    
+elif mode==2:
+    print ""
+    getCooks(url)
 
+elif mode==3:
+    print ""
+    indexCooks(url)
+
+elif mode==4:
+    print ""
+    setUrl(url)
+    
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
