@@ -191,6 +191,25 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.racebuddy"
+       name="RaceBuddy"
+       version="0.0.1"
+       provider-name="divingmule">
+  <requires>
+    <import addon="xbmc.python" version="1.0"/>
+    <import addon="script.module.beautifulsoup" version="3.0.8"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>RaceBuddy</summary>
+    <description>RaceBuddy, Live NASCAR Racing from the Speed Channel and Nascar.com      Note:  Some streams will immediately start buffering when the stream starts, when this happens, you will have to select play again. </description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="plugin.video.steam"
        name="Steam"
        version="0.0.1"
