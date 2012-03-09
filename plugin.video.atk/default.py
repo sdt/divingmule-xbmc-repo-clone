@@ -18,6 +18,7 @@ def categories():
         addDir('Cooks Country','http://www.cookscountry.com/videos/browse/?v=gl&video=episode',2,cicon)
         base_url = 'http://www.americastestkitchen.com/video/index.php?document_activeCategoryName_2_10_0_mv='
         addDir('Most Recent','http://www.americastestkitchen.com/video',1,icon)
+        addDir('Season 12',base_url+'episode&document_season_i=12',1,icon)
         addDir('Season 11',base_url+'episode&document_season_i=11',1,icon)
         addDir('Season 10',base_url+'episode&document_season_i=10',1,icon)
         addDir('Season 9',base_url+'episode&document_season_i=9',1,icon)
@@ -44,10 +45,10 @@ def index(url):
         response.close()
         match = re.compile('<img src="(.+?)" class="document_image" title="(.+?)"/></a>\n        <strong><a href="(.+?)" class="video_link">(.+?)</a></strong>\n        <p class="episode">(.+?)</em></p>').findall(link)
         for thumb, title, url, name, episode in match:
-            swf = ' swfUrl=http://www.americastestkitchen.com/flowplayer/plugins/flowplayer.rtmp-3.1.3.swf'
+            swf = ' swfUrl=http://www.americastestkitchen.com/flowplayer/flowplayer.commercial-3.2.7-4.swf'
             pageUrl = ' pageUrl=http://www.americastestkitchen.com/video/'+url
-            Playpath = ' Playpath=mp4:episode-ATKTV_'+episode.split('Ep. ')[1]+'-16x9-1000.m4v'
-            tcUrl = 'rtmp://bostoncp.flash.internapcdn.net/bostoncp/_definst_/'
+            Playpath = ' Playpath=mp4:amazons3/atk-private/video/episode-atktv_'+episode.split('Ep. ')[1]+'-16x9-1000.mp4'
+            tcUrl = 'rtmp://wowza.americastestkitchen.com/vods3/'
             finalurl = tcUrl+Playpath+pageUrl+swf
             addLink(title, finalurl, thumb)
             
