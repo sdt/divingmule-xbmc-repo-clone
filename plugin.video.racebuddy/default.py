@@ -62,8 +62,14 @@ def getVideoLinks(url):
         soup = BeautifulStoneSoup(getRequest(url))
         items = soup('livechannels')[0]('channel')
         for i in items:
-            name = i.title.string+' '+i.status.string
-            url = i.url.string
+            name = i.title.string
+            if i('url') > 1:
+                for item in i('url'):
+                    if item.string.startswith('rtmp'):
+                        url = item.string
+                    else: continue
+            else:
+                url = i.url.string
             addLink(name,url,3,os.path.join(home, 'icon.png'))
             
 
