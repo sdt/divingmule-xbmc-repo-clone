@@ -37,14 +37,19 @@ def index(url):
         if 'truck_' in url:
             try:
                 items = soup('div', attrs={'class' : "nscrRow"})
+                if len(items) < 1:
+                    raise
                 for i in items:
                     name = i('div')[2].string +' - '+ i('div')[0].string +' - '+ i('div')[1].string
                     addLink(name,'url',4,os.path.join(home, 'icon.png'), False)
             except:
+                print ' Looks Live '
                 getVideoLinks(page_truck+'config.xml')
         if 'nns_' in url:
             try:
                 items = soup.table('tr')
+                if len(items) < 1:
+                    raise
                 for i in items:
                     name = i('td')[0].string +' - '+ i('td')[2].string +' - '+ i('td')[1].string +' - '+i('td')[3].string
                     addLink(name,'url',4,os.path.join(home, 'icon.png'), False)
