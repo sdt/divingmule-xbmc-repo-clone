@@ -1,0 +1,10 @@
+Version 0.0.3
+fix an issue where pausing would kill mlbhls
+added ability to start games from the begining, and top of innings
+other bug fixes 
+
+Version 0.0.2
+fix for condensed games
+
+Version 0.0.1
+initial

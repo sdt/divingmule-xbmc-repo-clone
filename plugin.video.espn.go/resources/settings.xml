@@ -1,0 +1,3 @@
+<settings>
+   <setting id="bitrate" type="select" label="Bitrate" values="448k|948k|1464k|2096k|2896k" default="2096k"/>
+</settings>

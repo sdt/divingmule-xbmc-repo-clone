@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<channels>
+    <channel>
+    <name>News</name>
+    <thumbnail>http://www.lyngsat-logo.com/hires/ee/eurosport2.png</thumbnail>
+        <items>
+        
+            <item>
+                <title>POKER CHANNEL</title>
+                <link>mms://91.193.244.244/pokerchannel</link>
+                <thumbnail>http://www.lyngsat-logo.com/hires/pp/poker_channel.png?__SQUARESPACE_CACHEVERSION=12808 35516186</thumbnail>
+                <genre>Poker</genre>
+                <info>The Poker Channel – Europe’s largest dedicated gaming TV network is available online to a global audience, and to more than 30 million cable and satellite homes in Europe and Latin America.</info>
+                <date>07.12.2011</date>  <!-- format - dd.mm.yyyy -->
+                <epg></epg>  <!-- See daschacka's post - http://forum.xbmc.org/showpost.php?p=936228&postcount=1076 -->
+                <fanart></fanart>
+            </item>
+            
+            <item>
+                <title>NHK - World</title>         
+                <link>rtmp://175.41.168.21:1935/2e2cd playpath=nhkworldhd.sdp swfUrl="http://www3.nhk.or.jp/nhkworld/r/movie/fivecool_player.0.3.6.2.swf" pageUrl="http://www3.nhk.or.jp/nhkworld/r/movie/" swfVfy=true live=true</link>
+                <thumbnail>http://www3.nhk.or.jp/daily/english/common/images/header_logo.gif</thumbnail>
+            </item>
+            
+        </items>
+    </channel>
+
+    <channel>
+    <name>Television</name>
+    <thumbnail>http://www.lyngsat-logo.com/hires/ee/eurosport2.png</thumbnail>
+    <items>
+    <item>
+    <title>FILM 4</title>
+    <link>mms://verytangy-664-404364.wm.llnwd.net/verytangy_664-404364</link>
+    <thumbnail>http://www.lyngsat-logo.com/logo/tv/ff/film4.jpg?__SQUARESPACE_CACHEVERSION=1280835516186 </thumbnail>
+    </item>
+
+    <item>
+    <title>CHANNEL 4</title>
+    <link>mms://verytangy-656-400105.wm.llnwd.net/verytangy_656-400105</link>
+    <thumbnail>http://www.lyngsat-logo.com/hires/cc/channel4.png?__SQUARESPACE_CACHEVERSION=1280835516 186</thumbnail>
+    </item>
+    </items>	
+    </channel>
+
+    <channel>
+    <name>Sports</name>
+    <thumbnail>http://www.lyngsat-logo.com/hires/ee/eurosport2.png</thumbnail>
+    <items>
+    <item>
+    <title>Eurosport2</title>
+    <link>rtmp://94.75.250.213/liverepeater213o1/_definst_/doConnect=3dft4e7rt/ app=liverepeater213o1/_definst_/doConnect=3dft4e7rt/ swfUrl=http://cdn.freedocast.com/hdflvplayer/hdplayer.swf pageURL=http://www.freedocast.com/forms/watchstream.aspx?sc=532A426E31E9214510A0 playpath=79917_8E867647R17 live=true swfVfy=true</link>
+    <thumbnail>http://www.lyngsat-logo.com/hires/ee/eurosport2.png</thumbnail>
+    </item>
+    </items>
+    </channel>
+
+    <channel>
+    <name>Music</name>
+    <thumbnail>http://live.1hd.ro/images/onehd_classics.png</thumbnail>
+    <items>
+    <item>
+    <title>Classics</title>         
+    <link>rtmp://93.114.43.3:1935/live/ swfUrl=http://live.1hd.ro/player5.3.swf pageUrl=http://live.1hd.ro/classics.php playpath=classics live=true</link>
+    <thumbnail>http://live.1hd.ro/images/onehd_classics.png</thumbnail>
+    </item>
+
+    <item>
+    <title>Rock</title>
+    <link>rtmp://93.114.43.3:1935/live/ swfUrl=http://live.1hd.ro/player5.3.swf pageUrl=http://live.1hd.ro/ playpath=rock live=true</link>
+    <thumbnail>http://live.1hd.ro/images/onehd_rock.png</thumbnail>
+    </item>
+    </items>
+    </channel>
+</channels>	

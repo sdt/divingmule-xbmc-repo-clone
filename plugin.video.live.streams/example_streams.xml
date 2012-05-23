@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<items>
+
+    <item>
+        <title>POKER CHANNEL</title>
+        <link>mms://91.193.244.244/pokerchannel</link>
+        <thumbnail>http://www.lyngsat-logo.com/hires/pp/poker_channel.png?__SQUARESPACE_CACHEVERSION=12808 35516186</thumbnail>
+        <genre>Poker</genre>
+        <info>The Poker Channel – Europe’s largest dedicated gaming TV network is available online to a global audience, and to more than 30 million cable and satellite homes in Europe and Latin America.</info>
+        <date>07.12.2011</date>  <!-- format - dd.mm.yyyy -->
+        <epg></epg>  <!-- See daschacka's post - http://forum.xbmc.org/showpost.php?p=936228&postcount=1076 -->
+        <fanart>http://www.lyngsat-logo.com/hires/pp/poker_channel.png?__SQUARESPACE_CACHEVERSION=12808 35516186</fanart>
+    </item>
+    
+	<item>
+        <title>NHK - World</title>         
+        <link>rtmp://175.41.168.21:1935/2e2cd playpath=nhkworldhd.sdp swfUrl="http://www3.nhk.or.jp/nhkworld/r/movie/fivecool_player.0.3.6.2.swf" pageUrl="http://www3.nhk.or.jp/nhkworld/r/movie/" swfVfy=true live=true</link>
+        <thumbnail>http://www3.nhk.or.jp/daily/english/common/images/header_logo.gif</thumbnail>
+    </item>
+	
+    <item>
+        <title>BBC World</title>         
+        <link>rtmp://media2.lsops.net/live/ playpath=bbcworld1_en_high.sdp swfUrl="http://www.livestation.com/flash/player/5.4/player.swf" pageUrl="http://www.livestation.com/channels/10-bbc-world-news-english" swfVfy=true live=true</link>
+        <thumbnail>http://www.bbcworldnews.com/Pages/Images/Assets/9ee0304f-37db-40d1-8e11-26b7d46ce1df.jpg</thumbnail>
+    </item>
+	
+    <item>
+        <title>RT English</title>         
+        <link>rtmp://fms5.visionip.tv/live app=live swfUrl=http://rt.com/s/swf/player5.4.viral.swf pageURL=http://rt.com/on-air/ playpath=RT_3 live=true</link>
+        <thumbnail>http://profile.ak.fbcdn.net/hprofile-ak-snc4/27535_326683984410_1715_n.jpg</thumbnail>
+    </item>
+	
+    <item>
+        <title>CNBC</title>         
+        <link>http://bglive-a.bitgravity.com/bitgravity/dtv2/1000kbps</link>
+        <thumbnail>None</thumbnail>
+    </item>	
+	
+</items>

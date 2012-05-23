@@ -1,0 +1,21 @@
+<settings>
+  <category label="MLB.TV">
+    <setting id="email" type="text" label="30085" default=""/>
+    <setting id="password" type="text" label="30086" default="" option="hidden"/>
+    <setting id="hls" type="bool" label="Enable HLS" default="true"/>
+    <setting id="hls_lock" type="bool" label="Lock Bitrate" default="true" visible="eq(-1,true)"/>
+    <setting id="hls_start" type="enum" label="Start Bitrate" values="4.5 Mb|3.0 Mb|2.4 Mb|1.8 Mb|1.2 Mb|800 Kb|500 Kb" default="0" visible="eq(-2,true)"/>
+    <setting id="hls_max" type="enum" label="Maximum Bitrate" values="4.5 Mb|3.0 Mb|2.4 Mb|1.8 Mb|1.2 Mb|800 Kb|500 Kb|None" default="7" visible="eq(-3,true)" enable="eq(-2,false)"/>
+    <setting id="hls_min" type="enum" label="Minimum Bitrate" values="4.5 Mb|3.0 Mb|2.4 Mb|1.8 Mb|1.2 Mb|800 Kb|500 Kb|None" default="7" visible="eq(-4,true)" enable="eq(-3,false)"/>
+    <setting id="hls_start_time" type="bool" label="Start games from the beginning." default="false" visible="eq(-5,true)"/>
+    <setting id="hls_start_block" type="enum" label="Start Block" values="0|5|10|20|30|40|50|60|70|80|90|100" default="0" visible="eq(-5,true)" enable="eq(-1,false)" />
+    <setting id="fifo" type="bool" label="Use File-In File-Out" default="false" visible="eq(-7,true)"/>
+    <setting id="hls_wait" type="text" label="Number of seconds to let video cache" default="10" visible="eq(-8,true)" enable="eq(-1,false)" />
+    <setting id="scenario" type="select" label="30087" values="2400K|1800K|1200K|800K|500K|300K" default="2400K" visible="eq(-9,false)"/>
+    <setting id="archive_scenario" type="select" label="30088" values="FLASH_1200K_800X448|FLASH_800K_400X448|FLASH_500K_400X224|FLASH_128K_256X144" default="FLASH_1200K_800X448" visible="eq(-10,false)"/>
+  </category>
+  
+  <category label="Debug Mode">
+    <setting id="debug" type="bool" label="30089" default="false"/>
+  </category>
+</settings>
