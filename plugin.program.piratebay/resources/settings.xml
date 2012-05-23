@@ -1,4 +1,0 @@
-<settings>
-  <setting id="sort" type="enum" label="Sort Method" values="Most Recent|Top 100|Most Seeders|Most Leechers" default="0"/>
-  <setting id="download" type="folder" label="Download Location" default="" /> 
-</settings>

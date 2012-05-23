@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.live.streams"
-       name="LiveStreams"
-       version="1.0.5"
+<addon id="plugin.video.mlbmc.hls"
+       name="MLBMC(mlb-hls)"
+       version="0.0.3"
        provider-name="divingmule">
   <requires>
     <import addon="xbmc.python" version="2.0"/>
 	<import addon="script.module.beautifulsoup" version="3.0.8"/>
-    <import addon="script.module.simplejson" />
   </requires>
   <extension point="xbmc.python.pluginsource"
             library="default.py">
         <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary>livestreams</summary>
-    <description>It's up to you ;-) As an alternative to .strm files this add-on lets you add streams by adding items to an xml file. Thus giving you a nice list with thumbnails, fanart, and media info if you like.</description>
+    <summary>Videos from mlb.com, Live games for MLB.tv subscribers.</summary>
+    <description>Video highlights from MLB.com. MLb.tv subscribers can watch the live and archived games. Usually there is a free game of the day witch only requires a mlb.com account.</description>
     <platform>all</platform>
   </extension>
 </addon>

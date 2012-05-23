@@ -1,24 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.program.piratebay"
-       name="The Pirate Bay"
-       version="0.0.2"
-       provider-name="divingmule">
-  <requires>
-    <import addon="xbmc.python" version="1.0"/>
-    <import addon="script.web.viewer"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>executable</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>Browse and download .torrent files</summary>
-    <description>This add-on lets you browse and download .torrent files from The Pirate Bay.</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
 <addon id="plugin.video.alaska.hd"
        name="Alaska HDTV"
        version="0.0.1"
@@ -94,12 +75,32 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.live.streams"
-       name="LiveStreams"
-       version="0.1.6"
+<addon id="plugin.video.jtv.archives"
+       name="Jtv"
+       version="0.2.6"
        provider-name="divingmule">
   <requires>
-    <import addon="xbmc.python" version="1.0"/>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.common.plugin.cache" version="0.9.1"/>
+    <import addon="script.module.simplejson"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Justin.tv</summary>
+    <description>Watch live and archived videos from justin.tv</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.live.streams"
+       name="LiveStreams"
+       version="1.0.5"
+       provider-name="divingmule">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
 	<import addon="script.module.beautifulsoup" version="3.0.8"/>
     <import addon="script.module.simplejson" />
   </requires>
@@ -109,7 +110,7 @@
   </extension>
   <extension point="xbmc.addon.metadata">
     <summary>livestreams</summary>
-    <description>It's up to you;-) As an alternative to .strm files this add-on lets you add streams by adding items to an xml file. Thus giving you a nice list with thumbnails if you like.</description>
+    <description>It's up to you ;-) As an alternative to .strm files this add-on lets you add streams by adding items to an xml file. Thus giving you a nice list with thumbnails, fanart, and media info if you like.</description>
     <platform>all</platform>
   </extension>
 </addon>
@@ -129,6 +130,25 @@
   <extension point="xbmc.addon.metadata">
     <summary>MyDamnChannel.com</summary>
     <description>Videos from mydamnchannel.com</description>
+    <platform>all</platform>
+  </extension>
+</addon>
+
+<addon id="plugin.video.mlbmc.hls"
+       name="MLBMC(mlb-hls)"
+       version="0.0.3"
+       provider-name="divingmule">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+	<import addon="script.module.beautifulsoup" version="3.0.8"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>Videos from mlb.com, Live games for MLB.tv subscribers.</summary>
+    <description>Video highlights from MLB.com. MLb.tv subscribers can watch the live and archived games. Usually there is a free game of the day witch only requires a mlb.com account.</description>
     <platform>all</platform>
   </extension>
 </addon>
@@ -167,26 +187,6 @@
   <extension point="xbmc.addon.metadata">
     <summary>Videos from pgatour.com</summary>
     <description>Plays videos from The Professionl Golfers Association Tour website.</description>
-    <platform>all</platform>
-  </extension>
-</addon>
-
-<addon id="plugin.video.pipes"
-       name="Pipes"
-       version="0.0.1"
-       provider-name="divingmule, Vrok">
-  <requires>
-    <import addon="xbmc.python" version="1.0"/>
-	<import addon="script.module.beautifulsoup" version="3.0.8"/>
-	<import addon="script.module.simplejson"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource"
-            library="default.py">
-        <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <summary>This is a XBMC add-on that list videos from sites like Justin.TV, Ustream and others. Then uses Firefox to play the video.</summary>
-    <description>Check here: http://code.google.com/p/pipes-xbmc/ and here: http://forum.xbmc.org/showthread.php?t=94739 for more information.</description>
     <platform>all</platform>
   </extension>
 </addon>
