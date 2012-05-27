@@ -27,7 +27,6 @@ import urllib
 import urllib2
 import re
 import os
-import base64
 import cookielib
 import datetime
 import time
@@ -798,7 +797,8 @@ def mlbGame(event_id, full_count=False):
                         liz=xbmcgui.ListItem( coloring( name,"cyan",name ), iconImage=icon, thumbnailImage=icon)
                     else:
                         liz=xbmcgui.ListItem(name, iconImage=icon)
-                    liz.setProperty('IsPlayable', 'true')
+                    if scenario != "HTTP_CLOUD_WIRED_WEB":
+                        liz.setProperty('IsPlayable', 'true')
                     if item.type.string == 'audio':
                         liz.setInfo( type="Music", infoLabels={ "Title": name } )
                     else:
@@ -916,10 +916,88 @@ def getGameURL(name,event,content,session,cookieIp,cookieFp,scenario,live,start)
                 return
 
             if scenario == "HTTP_CLOUD_WIRED_WEB":
-                hls_url = base64.b64decode(game_url)#.split('|')[0].replace('master_wired.m3u8','1200K/1200_complete.m3u8')
-                addon_log( 'HLS URL: '+hls_url )
-                item = xbmcgui.ListItem(path=hls_url)
-                xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+                addon_log( 'Starting HLS' )
+                tmpdir = tempfile.mkdtemp()
+                filename = os.path.join(tmpdir, name.replace(' ','_')+'.ts')
+                addon_log( 'Temp Directory: '+filename )
+                
+                if __settings__.getSetting('fifo') == 'true':
+                    try:
+                        os.mkfifo(filename)
+                    except OSError, e:
+                        addon_log( "Failed to create FIFO: %s" % e )
+                    
+                target = 'mlbhls -B '+game_url+' -o '+filename
+                
+                if __settings__.getSetting('hls_lock') == 'true':
+                    target += ' -L'
+                
+                bitrate_values = {
+                    '0':' 4500000',
+                    '1':' 3000000',
+                    '2':' 2400000',
+                    '3':' 1800000',
+                    '4':' 1200000',
+                    '5':' 800000',
+                    '6':' 500000'
+                    }
+                    
+                start_bitrate = __settings__.getSetting('hls_start')
+                if not name == 'full_count':
+                    target += ' -s'+bitrate_values[start_bitrate]
+                else:
+                    if __settings__.getSetting('hls_start') == '0':
+                        target += ' -s'+bitrate_values['1']
+                    else:
+                        target += ' -s'+bitrate_values[start_bitrate]
+                        
+                if __settings__.getSetting('hls_lock') == 'false':
+                    max_bitrate = __settings__.getSetting('hls_max')
+                    if not max_bitrate == '7':
+                        target += ' -b'+bitrate_values[max_bitrate]
+                    min_bitrate = __settings__.getSetting('hls_min')
+                    if not min_bitrate == '7':
+                        target += ' -m'+bitrate_values[min_bitrate]
+                
+                if not name == 'full_count':
+                    start_values = {
+                        '0':' 0',
+                        '1':' 5',
+                        '2':' 10',
+                        '3':' 20',
+                        '4':' 30',
+                        '5':' 40',
+                        '6':' 50',
+                        '7':' 60',
+                        '8':' 70',
+                        '9':' 80',
+                        '10':' 90',
+                        '11':' 100'
+                        }
+                    start_block = __settings__.getSetting('hls_start_block')
+                if not start is None:
+                    target += ' -F ' + start
+                elif live or (__settings__.getSetting('hls_start_time') == 'false'):
+                    target += ' -f 0'#+start_values[start_block]
+                elif not name == 'full_count':
+                    if (not live) or (__settings__.getSetting('hls_start_time') == 'true'):
+                        try:
+                            target += ' -F ' + getStartTime(soup.find('innings-index').string, 'start')
+                        except:
+                            addon_log( 'getStartTime exception' )
+                            target += ' -f 50'
+                
+                addon_log( 'Target: '+target )
+                p = Popen(target, shell=True, stdout=PIPE, stdin=PIPE, stderr=STDOUT, bufsize=-1)
+                
+                if __settings__.getSetting('fifo') == 'false':
+                    hls_wait = int(__settings__.getSetting('hls_wait')+'000')
+                    if hls_wait >= 5000:
+                        xbmc.executebuiltin("XBMC.Notification("+__language__(30015)+",Caching for "+__settings__.getSetting('hls_wait')+" Seconds,"+str(hls_wait - 1000)+","+icon+")")
+                    xbmc.sleep(hls_wait)
+                xbmc.Player().play(filename)
+                mlb_hls_check(filename,tmpdir)
+                return
             
             else:
                 if game_url.startswith('rtmp'):
