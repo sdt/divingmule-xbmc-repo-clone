@@ -35,6 +35,7 @@ try:
 except:
     FAV = None
 search_q = xbmc.translatePath( os.path.join( profile, 'search_queries' ) )
+passwords_file = xbmc.translatePath( os.path.join( profile, 'passwords' ) )
 try:
     SEARCH_LIST = open(search_q).read()
 except:
@@ -344,7 +345,7 @@ def playLive(name, play=False, password=None):
             xbmc.executebuiltin("XBMC.Notification(Jtv,Live Data Not Found,5000,"+ICON+")")
             return
         elif data[0]['needed_info'] == 'private':
-            password = getPassword()
+            password = getPassword(name)
             if password is None:
                 return
             url += '&private_code='+password
@@ -380,8 +381,24 @@ def getSwfUrl(channel_name):
         response = urllib2.urlopen(req)
         return response.geturl()
 
+def loadPasswords():
+        passwords = {}
+        if settings.getSetting('save_passwords') == 'true':
+            if xbmcvfs.exists(passwords_file):
+                passwords = json.loads(open(passwords_file).read())
+        return passwords
 
-def getPassword():
+def savePasswords(passwords):
+        if settings.getSetting('save_passwords') == 'true':
+            f = open(passwords_file, "w")
+            f.write(json.dumps(passwords))
+            f.close()
+
+def getPassword(name):
+        passwords = loadPasswords
+        if name in passwords:
+            return passwords[name]
+
         keyboard = xbmc.Keyboard('','Enter Password')
         keyboard.doModal()
         if (keyboard.isConfirmed() == False):
@@ -390,6 +407,8 @@ def getPassword():
         if len(password) == 0:
             return None
         else:
+            passwords[name] = password
+            savePasswords(passwords)
             return password
 
 

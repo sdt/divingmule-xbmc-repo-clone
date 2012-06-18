@@ -6,5 +6,6 @@
   <setting id="fanart" type="bool" label="Enable Fanart" default="true"/>
   <setting id="view_mode" type="enum" label="Set View Mode For Channels(Confluence only)" values="Default|List|Big List|Thumbnail|Poster Wrap|Fanart|Media Info|Media Info 2" default="0" />
   <setting id="save_search" type="bool" label="Save Search Queries" default="true"/>
+  <setting id="save_passwords" type="bool" label="Save Passwords" default="false"/>
   <setting id="debug" type="bool" label="Enable Debugging" default="false"/>
 </settings>
