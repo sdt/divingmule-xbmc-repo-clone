@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
+<addon id="plugin.audio.noagenda"
+       name="No Agenda"
+       version="0.0.1"
+       provider-name="divingmule">
+  <requires>
+    <import addon="xbmc.python" version="2.0"/>
+    <import addon="script.module.beautifulsoup" version="3.0.8"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>audio</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary>The NO Agenda Show</summary>
+    <description>A show about politics with no agenda, by Adam Curry and John C. Dvorak</description>
+    <language>en</language>
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="plugin.video.alaska.hd"
        name="Alaska HDTV"
        version="0.0.1"
