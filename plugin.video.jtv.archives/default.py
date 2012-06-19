@@ -396,10 +396,7 @@ def savePasswords(passwords):
 
 def getPassword(name):
         passwords = loadPasswords
-        if name in passwords:
-            return passwords[name]
-
-        keyboard = xbmc.Keyboard('','Enter Password')
+        keyboard = xbmc.Keyboard(passwords[name],'Enter Password')
         keyboard.doModal()
         if (keyboard.isConfirmed() == False):
             return
